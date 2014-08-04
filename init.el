@@ -32,7 +32,6 @@
             (when (string= (buffer-name) "*scratch*")
               (animate-string "Emacs Makes All Computing Simple" (/ (frame-height) 2)))))
 
-(add-to-list 'load-path "custom")
 ;;;; Local
 
 (load-local "misc")
@@ -249,6 +248,11 @@
 (use-package rainbow-mode
   :config
   (rainbow-mode t))
+
+(use-package plim-mode
+  :init (progn
+          (add-to-list 'auto-mode-alist '("\\.slim\\'" . plim-mode))
+          (add-to-list 'auto-mode-alist '("\\.html\\'" . plim-mode))))
 
 ;;;; Python
 
