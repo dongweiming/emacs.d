@@ -1,3 +1,9 @@
+;;; package --- Summary
+
+;;; Commentary:
+
+;;; Code:
+
 (unless (= emacs-major-version 24)
   (error "Emacs version 24 is required"))
 
@@ -10,6 +16,9 @@
 (require 'use-package)
 (require 'python-environment)
 (require 'py-autopep8)
+(require 'helm-command)
+(require 'helm-misc)
+(require 'helm-eshell)
 ; autopep8
 (add-hook 'before-save-hook 'py-autopep8-before-save)
 
@@ -117,9 +126,6 @@
     (add-hook 'after-init-hook 'global-flycheck-mode)
     (add-hook 'before-save-hook 'flycheck-list-errors)))
 
-(use-package flycheck-cask
-  :init (add-hook 'flycheck-mode-hook 'flycheck-cask-setup))
-
 (use-package yasnippet
   :init
   (progn
@@ -140,6 +146,13 @@
     (setq css-indent-offset 4)
     (add-hook 'css-mode-hook (lambda () (rainbow-mode t)))))
 
+(use-package mmm-mako
+  :config
+  (progn
+    (setq mmm-global-mode 'maybe)
+    (add-to-list 'auto-mode-alist '("\\.mako\\'" . html-mode))
+    (mmm-add-mode-ext-class 'html-mode "\\.mako\\'" 'mako)))
+
 (use-package js-mode
   :mode ("\\.json$" . js-mode)
   :init
@@ -153,6 +166,14 @@
   :config
   (progn
     (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 4)))))
+
+(use-package js3-mode
+  :config
+  (progn
+    (add-hook 'js2-mode-hook (lambda ()
+                               (js3-auto-indent-p t)
+                               (js3-enter-indents-newline t)
+                               (js3-indent-on-enter-key t)))))
 
 (use-package coffee-mode
   :config
@@ -254,6 +275,17 @@
           (add-to-list 'auto-mode-alist '("\\.slim\\'" . plim-mode))
           (add-to-list 'auto-mode-alist '("\\.html\\'" . plim-mode))))
 
+(use-package helm
+  :init (helm-mode 1)
+  :bind (("C-c h" . helm-mini)
+         ("C-x C-f" . helm-find-files)
+         ("M-x" . helm-M-x)
+         )
+  :config
+  (add-hook 'eshell-mode-hook
+            #'(lambda ()
+                (bind-key "M-l" 'helm-eshell-history))))
+
 ;;;; Python
 
 (add-hook 'python-mode-hook 'jedi:setup)
@@ -288,3 +320,6 @@
 
 (bind-key "C-z" 'undo)
 (bind-key "C-c b" 'switch-to-previous-buffer)
+
+(provide 'init)
+;;; init.el ends here
