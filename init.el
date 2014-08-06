@@ -19,6 +19,7 @@
 (require 'helm-command)
 (require 'helm-misc)
 (require 'helm-eshell)
+
 ; autopep8
 (add-hook 'before-save-hook 'py-autopep8-before-save)
 
@@ -263,9 +264,6 @@
   :config
   (eval-after-load "flycheck" '(add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode)))
 
-(require 'powerline)
-(powerline-default-theme)
-
 (use-package rainbow-mode
   :config
   (rainbow-mode t))
@@ -279,12 +277,20 @@
   :init (helm-mode 1)
   :bind (("C-c h" . helm-mini)
          ("C-x C-f" . helm-find-files)
-         ("M-x" . helm-M-x)
+;         ("M-x" . helm-M-x)
          )
   :config
   (add-hook 'eshell-mode-hook
             #'(lambda ()
                 (bind-key "M-l" 'helm-eshell-history))))
+
+(use-package powerline
+  :init (powerline-default-theme)
+  :config
+  (progn
+    (setq powerline-arrow-shape 'arrow)   ;; the default
+    (setq powerline-arrow-shape 'curve)   ;; give your mode-line curves
+    (setq powerline-arrow-shape 'arrow14)))
 
 ;;;; Python
 
@@ -294,15 +300,11 @@
 ;;;; Fonts faces
 
 (custom-set-faces
-
+ '(default ((t (:height 180 :family "Inconsolata"))))
  '(web-mode-html-tag-bracket-face ((t (:foreground "magenta"))))
  '(ein:cell-input-area ((t (:background "#042028"))))
  '(ein:cell-input-prompt ((t (:inherit header-line :background "#002b35" :foreground "#859900" :inverse-video nil :weight bold))))
  '(ein:cell-output-prompt ((t (:inherit header-line :background "#002b35" :foreground "#dc322f" :inverse-video nil :weight bold))))
- '(font-lock-comment-face ((t (:foreground "#6171c4" :inverse-video nil :underline nil :slant italic :weight normal))))
- '(font-lock-function-name-face ((t (:foreground "#2075c7" :inverse-video nil :underline nil :slant normal :weight bold))))
- '(font-lock-keyword-face ((t (:foreground "#cb4b16" :inverse-video nil :underline nil :slant normal :weight normal))))
- '(font-lock-type-face ((t (:foreground "#d33682" :inverse-video nil :underline nil :slant normal :weight normal))))
  '(fringe ((t (:background "#002b35" :foreground "#465a61"))))
  '(magit-item-highlight ((t (:inherit highlight :background "#042028"))))
  '(markdown-header-face-1 ((t (:inherit markdown-header-face :height 210))))
