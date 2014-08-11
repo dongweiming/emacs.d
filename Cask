@@ -42,6 +42,7 @@
 (depends-on "editorconfig")
 (depends-on "multiple-cursors")
 (depends-on "js2-refactor")
+(depends-on "expand-region")
 (depends-on "powerline" :git "https://github.com/milkypostman/powerline.git" :files ("*" (:exclude ".git")))
 (depends-on "plim-mode" :git "https://github.com/dongweiming/plim-mode.git" :files ("*" (:exclude ".git")))
 (depends-on "yasnippets" :git "https://github.com/rejeep/yasnippets.git" :files ("*" (:exclude ".git")))

@@ -273,6 +273,9 @@
           (add-to-list 'auto-mode-alist '("\\.slim\\'" . plim-mode))
           (add-to-list 'auto-mode-alist '("\\.html\\'" . plim-mode))))
 
+(use-package expand-region
+  :bind (("C-@" . er/expand-region)))
+
 (use-package helm
   :init (helm-mode 1)
   :bind (("C-c h" . helm-mini)
@@ -288,9 +291,10 @@
   :init (powerline-default-theme)
   :config
   (progn
-    (setq powerline-arrow-shape 'arrow)   ;; the default
-    (setq powerline-arrow-shape 'curve)   ;; give your mode-line curves
-    (setq powerline-arrow-shape 'arrow14)))
+    (setq powerline-default-separator 'alternate)
+    (setq powerline-color1 "#0088cc")
+    (setq powerline-color2 "white")
+    ))
 
 ;;;; Python
 
@@ -300,11 +304,18 @@
 ;;;; Fonts faces
 
 (custom-set-faces
- '(default ((t (:height 180 :family "Inconsolata"))))
- '(web-mode-html-tag-bracket-face ((t (:foreground "magenta"))))
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(ein:cell-input-area ((t (:background "#042028"))))
  '(ein:cell-input-prompt ((t (:inherit header-line :background "#002b35" :foreground "#859900" :inverse-video nil :weight bold))))
  '(ein:cell-output-prompt ((t (:inherit header-line :background "#002b35" :foreground "#dc322f" :inverse-video nil :weight bold))))
+ '(erc-nick-default-face ((t (:foreground "#00afaf" :inverse-video nil :underline nil :slant normal :weight normal))) t)
+ '(font-lock-comment-face ((t (:foreground "#6171c4" :inverse-video nil :underline nil :slant italic :weight normal))))
+ '(font-lock-function-name-face ((t (:foreground "#2075c7" :inverse-video nil :underline nil :slant normal :weight bold))))
+ '(font-lock-keyword-face ((t (:foreground "#cb4b16" :inverse-video nil :underline nil :slant normal :weight normal))))
+ '(font-lock-type-face ((t (:foreground "#d33682" :inverse-video nil :underline nil :slant normal :weight normal))))
  '(fringe ((t (:background "#002b35" :foreground "#465a61"))))
  '(magit-item-highlight ((t (:inherit highlight :background "#042028"))))
  '(markdown-header-face-1 ((t (:inherit markdown-header-face :height 210))))
@@ -316,7 +327,12 @@
  '(markdown-math-face ((t (:inherit font-lock-string-face :foreground "#cb4b16" :slant italic))))
  '(mode-line ((t (:background "#0a2832" :foreground "#eee8d4" :inverse-video t :box nil :underline nil :slant normal :weight normal))))
  '(mumamo-background-chunk-major ((t (:background "#002b36"))))
- '(py-variable-name-face ((t (:inherit default :foreground "#268bd2")))))
+ '(powerline-active1 ((t (:background "gray20" :foreground "blue"))))
+ '(powerline-active2 ((t (:background "green"))))
+ '(powerline-inactive1 ((t (:foreground "gray75" :background "gray45"))))
+ '(powerline-inactive2 ((t (:foreground "gray75" :background "gray40"))))
+ '(py-variable-name-face ((t (:inherit default :foreground "#268bd2"))))
+ '(web-mode-html-tag-bracket-face ((t (:foreground "magenta")))))
 
 ;;;; Bindings
 
