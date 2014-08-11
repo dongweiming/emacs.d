@@ -338,6 +338,8 @@
 
 (bind-key "C-z" 'undo)
 (bind-key "C-c b" 'switch-to-previous-buffer)
+(bind-key "M-n" 'hold-line-scroll-up)
+(bind-key "M-p" 'hold-line-scroll-down)
 
 (provide 'init)
 ;;; init.el ends here

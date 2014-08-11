@@ -17,3 +17,23 @@
 Repeated invocations toggle between the two most recently open buffers."
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) 1)))
+
+(defun hold-line-scroll-up ()
+  "Scroll the page with the cursor in the same line"
+  (interactive)
+  ;; move the cursor also
+  (let ((tmp (current-column)))
+    (scroll-up 1)
+    (line-move-to-column tmp)
+    (forward-line 1)))
+
+(defun hold-line-scroll-down ()
+  "Scroll the page with the cursor in the same line"
+  (interactive)
+  ;; move the cursor also
+  (let ((tmp (current-column)))
+    (scroll-down 1)
+    (line-move-to-column tmp)
+    (forward-line -1)))
+
+;;; functions.el ends here

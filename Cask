@@ -2,7 +2,6 @@
 (source melpa)
 (source marmalade)
 
-(depends-on "pallet")
 (depends-on "smex")
 (depends-on "s")
 (depends-on "ace-jump-mode")
@@ -19,7 +18,6 @@
 (depends-on "popup")
 (depends-on "bind-key")
 (depends-on "coffee-mode")
-(depends-on "color-theme")
 (depends-on "commander")
 (depends-on "dash")
 (depends-on "git")
@@ -39,7 +37,6 @@
 (depends-on "helm")
 (depends-on "mmm-mako")
 (depends-on "projectile")
-(depends-on "editorconfig")
 (depends-on "multiple-cursors")
 (depends-on "js2-refactor")
 (depends-on "expand-region")

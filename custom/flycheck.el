@@ -3613,8 +3613,6 @@ no next error."
 (defun flycheck-list-errors ()
   "Show the error list for the current buffer."
   (interactive)
-  (unless flycheck-mode
-    (user-error "Flycheck mode not enabled"))
   ;; Create and initialize the error list
   (unless (get-buffer flycheck-error-list-buffer)
     (with-current-buffer (get-buffer-create flycheck-error-list-buffer)
