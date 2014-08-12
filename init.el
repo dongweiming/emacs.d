@@ -46,8 +46,8 @@
 
 (load-local "misc")
 (load-local "functions")
-;;(when (eq system-type 'darwin)
-;;  (load-local "osx"))
+(when (eq system-type 'darwin)
+  (load-local "osx"))
 
 ;;;; Packages
 
@@ -340,6 +340,7 @@
 (bind-key "C-c b" 'switch-to-previous-buffer)
 (bind-key "M-n" 'hold-line-scroll-up)
 (bind-key "M-p" 'hold-line-scroll-down)
+(bind-key "C-c v" 'py-taglist)
 
 (provide 'init)
 ;;; init.el ends here

@@ -36,4 +36,26 @@ Repeated invocations toggle between the two most recently open buffers."
     (line-move-to-column tmp)
     (forward-line -1)))
 
+(defun py-taglist (arg)
+  "A simple taglist for python"
+  (interactive "P")
+  (let ((buffer-other
+         (if arg
+             "*py-taglist*"
+           (format "*py-taglist from %s*" (buffer-name)))))
+    (occur-1 "class \\|def " nil
+             (if arg
+                 (delq nil (mapcar (lambda (buffer)
+                                     (when (eq 'python-mode
+                                               (with-current-buffer buffer))
+                                       buffer))
+                                   (buffer-list)))
+               (list (current-buffer)))
+             buffer-other)
+    (let ((line (line-number-at-pos)))
+      (switch-to-buffer-other-window buffer-other)
+      (end-of-buffer)
+      (while (and (search-backward-regexp "^ *\\([0-9]+\\):" nil t)
+                  (> (string-to-int (match-string 1)) line)) t))))
+
 ;;; functions.el ends here
