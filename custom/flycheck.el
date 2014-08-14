@@ -3619,12 +3619,18 @@ no next error."
       (flycheck-error-list-mode)))
   (flycheck-error-list-set-source (current-buffer))
   ;; Show the error list in a window, and re-select the old window
-  (if flycheck-current-errors
-    (display-buffer flycheck-error-list-buffer))
+  (display-buffer flycheck-error-list-buffer)
   ;; Finally, refresh the error list to show the most recent errors
   (flycheck-error-list-refresh))
 
 (defalias 'list-flycheck-errors 'flycheck-list-errors)
+
+(defun flycheck-list-errors-only-when-errors ()
+  (if flycheck-current-errors
+      (flycheck-list-errors)
+    (-when-let (buffer (get-buffer flycheck-error-list-buffer))
+      (dolist (window (get-buffer-window-list buffer))
+        (quit-window nil window)))))
 
 
 ;;; Status reporting

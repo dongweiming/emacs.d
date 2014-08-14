@@ -28,7 +28,7 @@ Keybinding         | Description
 <kbd>C-M-%</kbd> |anzu-query-replace-regexp
 <kbd>M-e</kbd> |eshell
 <kbd>C-x C-b</kbd> |ibuffer
-<kbd>C-@</kbd> |expand-region
+<kbd>C-=</kbd> |expand-region
 <kbd>C-x C-f</kbd> |helm-find-files
 <kbd>M-l</kbd> |helm-eshell-history
 <kbd>C-z</kbd> |undo
@@ -36,3 +36,11 @@ Keybinding         | Description
 <kbd>M-n</kbd> |hold-line-scroll-up
 <kbd>M-p</kbd> |hold-line-scroll-down
 <kbd>C-c v</kbd> |A simple python tablist
+<kbd>C-c w</kbd> |hs-hide-block
+<kbd>C-c W</kbd> |hs-show-block
+<kbd>C-c s</kbd> |hs-hide-all
+<kbd>C-c S</kbd> |hs-show-all
+<kbd>C-c l</kbd> |hs-hide-level
+<kbd>C-c c</kbd> |hs-toggle-hiding
+<kbd>C-x C-f</kbd> |helm-find-files
+<kbd>C-tab</kbd> |helm-select-4th-action

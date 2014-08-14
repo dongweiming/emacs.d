@@ -8,6 +8,7 @@
   (error "Emacs version 24 is required"))
 
 (defvar init-dir (file-name-directory load-file-name))
+(defvar tmp-dir (expand-file-name "tmp" init-dir))
 (add-to-list 'load-path (expand-file-name "custom" init-dir))
 
 (require 'cask "~/.cask/cask.el")
@@ -16,15 +17,26 @@
 (require 'use-package)
 (require 'python-environment)
 (require 'py-autopep8)
-(require 'helm-command)
-(require 'helm-misc)
-(require 'helm-eshell)
+(require 'nyan-mode)
+
+; helm
+(require 'helm-config)
+(setq enable-recursive-minibuffers t)
+(bind-key "C-c h" 'helm-mini)
+(bind-key "C-x C-f" 'helm-find-files)
+(bind-key "M-x" 'helm-M-x)
+(bind-key "M-l" 'helm-eshell-history)
+(add-hook 'eshell-mode-hook
+          #'(lambda ()
+              (define-key eshell-mode-map
+                [remap eshell-pcomplete]
+                'helm-esh-pcomplete)))
+
+(setq default-directory (f-full (getenv "HOME")))
+(exec-path-from-shell-initialize)
 
 ; autopep8
 (add-hook 'before-save-hook 'py-autopep8-before-save)
-
-(setq default-directory (f-full (getenv "HOME")))
-;(exec-path-from-shell-initialize)
 
 ; whitespace
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
@@ -46,10 +58,18 @@
 
 (load-local "misc")
 (load-local "functions")
+(load-local "hs-minor-mode-conf")
 (when (eq system-type 'darwin)
   (load-local "osx"))
 
 ;;;; Packages
+
+(use-package powerline
+  :config
+  (progn
+    (setq powerline-arrow-shape 'arrow14)
+    (setq powerline-color1 "grey22")
+    (setq powerline-color2 "grey40")))
 
 (global-hl-line-mode +1)
 (use-package hl-line
@@ -58,9 +78,30 @@
 (use-package dash
   :config (dash-enable-font-lock))
 
+(use-package switch-window
+  :bind (("C-x o" . switch-window)))
+
 (use-package smex
   :init (smex-initialize)
-  :bind ("M-x" . smex))
+  :bind (("M-x" . smex)
+         ("M-X" . smex-major-mode-commands)
+         ("C-c C-c M-x" . execute-extended-command))
+  :config (setq smex-save-file (expand-file-name ".smex-items" tmp-dir)))
+
+(use-package sql
+  :config
+  (progn
+    (add-hook 'js2-mode-hook (lambda ()
+                               (setq sql-product 'mysql)
+                               (sql-highlight-mysql-keywords)))))
+
+(use-package projectile
+  :config
+  (progn
+    (projectile-global-mode)
+    (setq projectile-enable-caching t)
+    (setq projectile-file-exists-local-cache-expire (* 5 60))
+    (setq projectile-require-project-root nil)))
 
 (use-package ido
   :init (ido-mode 1)
@@ -72,7 +113,7 @@
     (setq ido-enable-flex-matching t)
     (setq ido-create-new-buffer 'always)
     (setq ido-max-prospects 10)
-    (setq ido-save-directory-list-file (expand-file-name "ido-saved-places" init-dir))
+    (setq ido-save-directory-list-file (expand-file-name "ido-saved-places" tmp-dir))
     (setq ido-file-extensions-order '(".py" ".el" ".coffee" ".js" ".css" ".scss"))
     (add-to-list 'ido-ignore-files "\\.DS_Store")))
 
@@ -107,7 +148,7 @@
     (setq magit-stage-all-confirm nil)
     (setq magit-unstage-all-confirm nil)
     (setq magit-restore-window-configuration t)
-    (add-hook 'magit-mode-hook 'rinari-launch))
+   (add-hook 'magit-mode-hook 'rinari-launch))
   :bind ("C-x g" . magit-status))
 
 ;; When you visit a file, point goes to the last place where it was when you previously visited the same file.
@@ -125,7 +166,7 @@
   :config
   (progn
     (add-hook 'after-init-hook 'global-flycheck-mode)
-    (add-hook 'before-save-hook 'flycheck-list-errors)))
+    (add-hook 'before-save-hook #'flycheck-list-errors-only-when-errors)))
 
 (use-package yasnippet
   :init
@@ -144,8 +185,7 @@
 (use-package css-mode
   :config
   (progn
-    (setq css-indent-offset 4)
-    (add-hook 'css-mode-hook (lambda () (rainbow-mode t)))))
+    (setq css-indent-offset 4)))
 
 (use-package mmm-mako
   :config
@@ -220,7 +260,6 @@
 (use-package scss-mode
   :config
   (progn
-    (add-hook 'scss-mode-hook (lambda () (rainbow-mode t)))
     ;; Default not excute scss-compile
     (setq scss-compile-at-save nil)))
 
@@ -252,7 +291,12 @@
   :config (setq ibuffer-expert t)
   :bind ("C-x C-b" . ibuffer))
 
-(use-package ag)
+(use-package ag
+  :config
+  (setq ag-arguments
+        '("--smart-case" "--nogroup" "--column" "--smart-case" "--stats" "--")
+        ag-highlight-search t)
+  :bind (("C-x C-a" . ag-project)))
 
 (use-package undo-tree
   :init (global-undo-tree-mode 1)
@@ -260,13 +304,18 @@
   (progn
     (diminish 'undo-tree-mode)))
 
-(use-package flycheck-color-mode-line
-  :config
-  (eval-after-load "flycheck" '(add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode)))
-
 (use-package rainbow-mode
   :config
-  (rainbow-mode t))
+  (progn
+    (add-hook 'html-mode-hook 'rainbow-mode)
+    (add-hook 'web-mode-hook 'rainbow-mode)
+    (add-hook 'css-mode-hook 'rainbow-mode)))
+
+(use-package drag-stuff
+  :config
+  (progn
+    (drag-stuff-global-mode t)))
+;(setq drag-stuff-modifier '(control shift))))
 
 (use-package plim-mode
   :init (progn
@@ -274,27 +323,38 @@
           (add-to-list 'auto-mode-alist '("\\.html\\'" . plim-mode))))
 
 (use-package expand-region
-  :bind (("C-@" . er/expand-region)))
+  :bind (("C-c x" . er/expand-region)))
 
-(use-package helm
-  :init (helm-mode 1)
-  :bind (("C-c h" . helm-mini)
-         ("C-x C-f" . helm-find-files)
-;         ("M-x" . helm-M-x)
-         )
-  :config
-  (add-hook 'eshell-mode-hook
-            #'(lambda ()
-                (bind-key "M-l" 'helm-eshell-history))))
+;; Open files remotley through ssh; or open in su(do).
+;;
+;;  Normally: C-x C-f /path/to/file
+;;  Through ssh: C-x C-f /ssh:username@myhost.univ:/path/to/file
+;;  Using sudo: C-x C-f /su::/etc/hosts
 
-(use-package powerline
-  :init (powerline-default-theme)
+(use-package tramp
   :config
   (progn
-    (setq powerline-default-separator 'alternate)
-    (setq powerline-color1 "#0088cc")
-    (setq powerline-color2 "white")
-    ))
+    (setq tramp-default-method "ssh")
+    (setq tramp-default-method "plink")
+    (setq tramp-default-user "myname")))
+
+(use-package rainbow-delimiters
+  :config (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+
+(use-package recentf
+  :bind (("C-x C-r" . recentf-ido-find-file))
+  :config
+  (progn
+    (setq recentf-save-file (expand-file-name ".recentf" tmp-dir)
+      recentf-max-saved-items 250)
+    (recentf-mode 1)))
+
+;; Save minibuffer history.
+(use-package savehist
+  :config
+  (progn
+    (setq savehist-file (expand-file-name ".savehist" tmp-dir))
+    (savehist-mode)))
 
 ;;;; Python
 
@@ -317,7 +377,15 @@
  '(font-lock-keyword-face ((t (:foreground "#cb4b16" :inverse-video nil :underline nil :slant normal :weight normal))))
  '(font-lock-type-face ((t (:foreground "#d33682" :inverse-video nil :underline nil :slant normal :weight normal))))
  '(fringe ((t (:background "#002b35" :foreground "#465a61"))))
+ '(isearch ((t (:foreground "#a33a37" :background "#f590ae"))))
+ '(isearch-fail ((t (:foreground "#ffffff" :background "#f590ae"))))
+ '(lazy-highlight ((t (:foreground "#465457" :background "#000000"))))
+ '(magit-branch ((t (:foreground "#fbde2d"))))
  '(magit-item-highlight ((t (:inherit highlight :background "#042028"))))
+ '(magit-log-head-label-local ((t (:foreground "#3387cc"))))
+ '(magit-log-head-label-remote ((t (:foreground "#65b042"))))
+ '(magit-log-sha1 ((t (:foreground "#cf6a4c"))))
+ '(magit-section-title ((t (:foreground "#adc6ee"))))
  '(markdown-header-face-1 ((t (:inherit markdown-header-face :height 210))))
  '(markdown-header-face-2 ((t (:inherit markdown-header-face :height 190))))
  '(markdown-header-face-3 ((t (:inherit markdown-header-face :height 170))))
@@ -325,13 +393,13 @@
  '(markdown-header-face-5 ((t (:inherit markdown-header-face :slant italic :weight bold))))
  '(markdown-header-face-6 ((t (:inherit markdown-header-face :slant italic :weight normal))))
  '(markdown-math-face ((t (:inherit font-lock-string-face :foreground "#cb4b16" :slant italic))))
- '(mode-line ((t (:background "#0a2832" :foreground "#eee8d4" :inverse-video t :box nil :underline nil :slant normal :weight normal))))
+ '(minibuffer-prompt ((t (:foreground "#729fcf" :bold t))))
+ '(mode-line ((t (:foreground "#030303" :background "#bdbdbd" :box nil))))
+ '(mode-line-inactive ((t (:foreground "#f9f9f9" :background "#666666" :box nil))))
  '(mumamo-background-chunk-major ((t (:background "#002b36"))))
- '(powerline-active1 ((t (:background "gray20" :foreground "blue"))))
- '(powerline-active2 ((t (:background "green"))))
- '(powerline-inactive1 ((t (:foreground "gray75" :background "gray45"))))
- '(powerline-inactive2 ((t (:foreground "gray75" :background "gray40"))))
  '(py-variable-name-face ((t (:inherit default :foreground "#268bd2"))))
+ '(show-paren-match ((t (:foreground "#000000" :background "#F0F6FC" :weight bold))))
+ '(show-paren-mismatch ((t (:foreground "#960050" :background "#1E0010" :weight bold))))
  '(web-mode-html-tag-bracket-face ((t (:foreground "magenta")))))
 
 ;;;; Bindings

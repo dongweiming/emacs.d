@@ -1,3 +1,18 @@
+;;; package --- Summary
+
+;;; Commentary:
+
+;;; Code:
+
+;; never have a retarded tool-bar at top
+(tool-bar-mode -1)
+;; never have a retarded menu-bar at top
+(menu-bar-mode -1)
+;; never have a retarded scrill-bar at side
+(scroll-bar-mode -1)
+;; show (in left margin) marker for empty lines
+(setq-default indicate-empty-lines t)
+
 ;; Do not show startup message
 (setq inhibit-startup-message t)
 
@@ -40,3 +55,21 @@
 
 ;; Display column number in the mode line
 (setq column-number-mode t)
+
+;; Reload File
+(global-set-key [f5] 'revert-buffer)
+(global-set-key [C-f5] 'revert-buffer-with-coding-system)
+
+;; Emacs has a complex mechanism to handle the vicissitudes of
+;; function key and modifier encodings on various terminal types.
+(define-key input-decode-map "\e\eOA" [(meta up)])
+(define-key input-decode-map "\e\eOB" [(meta down)])
+
+;; Change windows
+(global-set-key (kbd "C-x <up>") 'windmove-up)
+(global-set-key (kbd "C-x <down>") 'windmove-down)
+(global-set-key (kbd "C-x <right>") 'windmove-right)
+(global-set-key (kbd "C-x <left>") 'windmove-left)
+
+(provide 'misc)
+;;; misc.el ends here
