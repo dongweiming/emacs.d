@@ -29,11 +29,13 @@
 (set-keyboard-coding-system 'utf-8)
 (set-selection-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
-(setq default-buffer-file-coding-system 'utf-8)
 
 
 ;; Set font size
 (set-face-attribute 'default nil :height 140)
+
+;; Delete marked text on typing
+(delete-selection-mode t)
 
 ;; Do not ask for confirmation
 (setq confirm-nonexistent-file-or-buffer nil)
@@ -55,21 +57,6 @@
 
 ;; Display column number in the mode line
 (setq column-number-mode t)
-
-;; Reload File
-(global-set-key [f5] 'revert-buffer)
-(global-set-key [C-f5] 'revert-buffer-with-coding-system)
-
-;; Emacs has a complex mechanism to handle the vicissitudes of
-;; function key and modifier encodings on various terminal types.
-(define-key input-decode-map "\e\eOA" [(meta up)])
-(define-key input-decode-map "\e\eOB" [(meta down)])
-
-;; Change windows
-(global-set-key (kbd "C-x <up>") 'windmove-up)
-(global-set-key (kbd "C-x <down>") 'windmove-down)
-(global-set-key (kbd "C-x <right>") 'windmove-right)
-(global-set-key (kbd "C-x <left>") 'windmove-left)
 
 (provide 'misc)
 ;;; misc.el ends here

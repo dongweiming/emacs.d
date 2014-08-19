@@ -40,6 +40,7 @@
 
 ; whitespace
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
 ; highlight URLs in comments/strings
 (add-hook 'find-file-hooks 'goto-address-prog-mode)
 
@@ -409,6 +410,25 @@
 (bind-key "M-n" 'hold-line-scroll-up)
 (bind-key "M-p" 'hold-line-scroll-down)
 (bind-key "C-c v" 'py-taglist)
+(bind-key "C->" 'increase-window-height)
+(bind-key "C-<" 'decrease-window-height)
+(bind-key "C-," 'decrease-window-width)
+(bind-key "C-." 'increase-window-width)
+
+;; Reload File
+(bind-key  [f5] 'revert-buffer)
+(bind-key  [C-f5] 'revert-buffer-with-coding-system)
+
+;; Emacs has a complex mechanism to handle the vicissitudes of
+;; function key and modifier encodings on various terminal types.
+(define-key input-decode-map "\e\eOA" [(meta up)])
+(define-key input-decode-map "\e\eOB" [(meta down)])
+
+;; Change windows
+(bind-key "C-x <up>" 'windmove-up)
+(bind-key "C-x <down>" 'windmove-down)
+(bind-key "C-x <right>" 'windmove-right)
+(bind-key "C-x <left>" 'windmove-left)
 
 (provide 'init)
 ;;; init.el ends here
