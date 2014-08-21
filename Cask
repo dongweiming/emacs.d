@@ -45,4 +45,7 @@
 (depends-on "expand-region")
 (depends-on "rainbow-delimiters")
 (depends-on "plim-mode")
+(depends-on "powerline")
+(depends-on "color-identifiers-mode")
+(depends-on "smart-mode-line")
 (depends-on "yasnippets" :git "https://github.com/dongweiming/yasnippets.git" :files ("*" (:exclude ".git")))

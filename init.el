@@ -48,7 +48,19 @@
 (defun load-local (file)
   (load (f-expand file user-emacs-directory)))
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(anzu-deactivate-region t)
+ '(anzu-mode-lighter "")
+ '(anzu-replace-to-string-separator " => ")
+ '(anzu-search-threshold 1000)
+ '(custom-safe-themes (quote ("6a37be365d1d95fad2f4d185e51928c789ef7a4ccf17e7ca13ad63a8bf5b922f" default))))
+
 (load-theme 'solarized-dark :no-confirm)
+(add-hook 'after-init-hook 'global-color-identifiers-mode)
 
 (add-hook 'emacs-startup-hook
           (lambda ()
@@ -59,6 +71,7 @@
 
 (load-local "misc")
 (load-local "functions")
+(load-local "theme")
 (load-local "hs-minor-mode-conf")
 (when (eq system-type 'darwin)
   (load-local "osx"))
@@ -67,10 +80,7 @@
 
 (use-package powerline
   :config
-  (progn
-    (setq powerline-arrow-shape 'arrow14)
-    (setq powerline-color1 "grey22")
-    (setq powerline-color2 "grey40")))
+  (powerline-ha-theme))
 
 (global-hl-line-mode +1)
 (use-package hl-line
@@ -310,6 +320,7 @@
   (progn
     (add-hook 'html-mode-hook 'rainbow-mode)
     (add-hook 'web-mode-hook 'rainbow-mode)
+    (add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
     (add-hook 'css-mode-hook 'rainbow-mode)))
 
 (use-package drag-stuff
@@ -357,6 +368,23 @@
     (setq savehist-file (expand-file-name ".savehist" tmp-dir))
     (savehist-mode)))
 
+(use-package smart-mode-line
+  :init (sml/setup)
+  :config
+  (progn
+    (sml/apply-theme 'dark)
+    (setq useless-minor-modes '(" AC"   ;; First must have a space. :-(
+                                "GitGutter"
+                                "Undo-Tree"
+                                "Fly"
+                                "ARev"
+                                "Abbrev"
+                                "Fill"
+                                "ColorIds"
+                                "FIC"
+                                "FlyC.*"))
+    (setq sml/hidden-modes (mapconcat 'identity useless-minor-modes "\\| *"))))
+
 ;;;; Python
 
 (add-hook 'python-mode-hook 'jedi:setup)
@@ -377,7 +405,6 @@
  '(font-lock-function-name-face ((t (:foreground "#2075c7" :inverse-video nil :underline nil :slant normal :weight bold))))
  '(font-lock-keyword-face ((t (:foreground "#cb4b16" :inverse-video nil :underline nil :slant normal :weight normal))))
  '(font-lock-type-face ((t (:foreground "#d33682" :inverse-video nil :underline nil :slant normal :weight normal))))
- '(fringe ((t (:background "#002b35" :foreground "#465a61"))))
  '(isearch ((t (:foreground "#a33a37" :background "#f590ae"))))
  '(isearch-fail ((t (:foreground "#ffffff" :background "#f590ae"))))
  '(lazy-highlight ((t (:foreground "#465457" :background "#000000"))))
@@ -395,12 +422,11 @@
  '(markdown-header-face-6 ((t (:inherit markdown-header-face :slant italic :weight normal))))
  '(markdown-math-face ((t (:inherit font-lock-string-face :foreground "#cb4b16" :slant italic))))
  '(minibuffer-prompt ((t (:foreground "#729fcf" :bold t))))
- '(mode-line ((t (:foreground "#030303" :background "#bdbdbd" :box nil))))
- '(mode-line-inactive ((t (:foreground "#f9f9f9" :background "#666666" :box nil))))
+ '(mode-line ((t (:background "light green" :foreground "grey22" :inverse-video t :box nil :underline nil :slant normal :weight normal))))
  '(mumamo-background-chunk-major ((t (:background "#002b36"))))
  '(py-variable-name-face ((t (:inherit default :foreground "#268bd2"))))
- '(show-paren-match ((t (:foreground "#000000" :background "#F0F6FC" :weight bold))))
- '(show-paren-mismatch ((t (:foreground "#960050" :background "#1E0010" :weight bold))))
+ '(show-paren-match ((t (:foreground "#000000" :background "#F0F6FC" :weight bold))) t)
+ '(show-paren-mismatch ((t (:foreground "#960050" :background "#1E0010" :weight bold))) t)
  '(web-mode-html-tag-bracket-face ((t (:foreground "magenta")))))
 
 ;;;; Bindings
@@ -418,11 +444,6 @@
 ;; Reload File
 (bind-key  [f5] 'revert-buffer)
 (bind-key  [C-f5] 'revert-buffer-with-coding-system)
-
-;; Emacs has a complex mechanism to handle the vicissitudes of
-;; function key and modifier encodings on various terminal types.
-(define-key input-decode-map "\e\eOA" [(meta up)])
-(define-key input-decode-map "\e\eOB" [(meta down)])
 
 ;; Change windows
 (bind-key "C-x <up>" 'windmove-up)

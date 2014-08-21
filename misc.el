@@ -40,8 +40,6 @@
 ;; Do not ask for confirmation
 (setq confirm-nonexistent-file-or-buffer nil)
 
-(defalias 'dtw 'delete-trailing-whitespace)
-
 ;; Show trailing whitespace
 (setq-default show-trailing-whitespace t)
 
@@ -57,6 +55,14 @@
 
 ;; Display column number in the mode line
 (setq column-number-mode t)
+
+;; eliminate long "yes" or "no" prompts
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; Emacs has a complex mechanism to handle the vicissitudes of
+;; function key and modifier encodings on various terminal types.
+(define-key input-decode-map "\e\eOA" [(meta up)])
+(define-key input-decode-map "\e\eOB" [(meta down)])
 
 (provide 'misc)
 ;;; misc.el ends here
