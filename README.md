@@ -11,8 +11,13 @@ curl -fsSkL https://raw.github.com/cask/cask/master/go | python
 git clone https://github.com/dongweiming/emacs.d .emacs.d
 cd .emacs.d
 cask
-sudo pip install jedi pep8 autopep8 flake8
-
+sudo pip install epc jedi pep8 autopep8 flake8
+# or use virtualenv
+virtualenv venv
+source ~/venv/bin/activate
+pip install jedi pep8 autopep8 flake8
+# Start jedi Server
+M-x jedi:install-server
 ```
 
 Keymap

@@ -9,7 +9,8 @@
 ;; never have a retarded menu-bar at top
 (menu-bar-mode -1)
 ;; never have a retarded scrill-bar at side
-(scroll-bar-mode -1)
+(if (display-graphic-p)
+    (scroll-bar-mode -1))
 ;; show (in left margin) marker for empty lines
 (setq-default indicate-empty-lines t)
 

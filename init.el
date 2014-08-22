@@ -17,7 +17,8 @@
 (require 'use-package)
 (require 'python-environment)
 (require 'py-autopep8)
-(require 'nyan-mode)
+(if (display-graphic-p)
+    (require 'nyan-mode))
 
 ; helm
 (require 'helm-config)
