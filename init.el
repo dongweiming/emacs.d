@@ -385,10 +385,37 @@
                                 "FlyC.*"))
     (setq sml/hidden-modes (mapconcat 'identity useless-minor-modes "\\| *"))))
 
+; (use-package fill-column-indicator
+;  :init (define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
+;  :config
+;  (progn
+;    (setq-default fci-rule-column 80)
+;    (setq fci-rule-width 2)
+;    (setq fci-rule-color "#2075c7")
+;    (global-fci-mode 1)))
+
 ;;;; Python
 
 (add-hook 'python-mode-hook 'jedi:setup)
 (setq jedi:complete-on-dot t)
+(setq
+ python-shell-interpreter "ipython"
+ python-shell-interpreter-args ""
+ python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+ python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+ python-shell-completion-setup-code
+   "from IPython.core.completerlib import module_completion"
+ python-shell-completion-module-string-code
+   "';'.join(module_completion('''%s'''))\n"
+ python-shell-completion-string-code
+   "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
+(setenv "LC_CTYPE" "UTF-8")
+
+(use-package ein
+  :config
+  (setq ein:use-auto-complete 1)
+  :bind (("C-c !" . python-shell-switch-to-shell)
+         ("C-c |" . python-shell-send-region)))
 
 ;;;; Fonts faces
 
@@ -431,6 +458,7 @@
 
 ;;;; Bindings
 
+(bind-key "RET" 'newline-and-indent)
 (bind-key "C-z" 'undo)
 (bind-key "C-c b" 'switch-to-previous-buffer)
 (bind-key "M-n" 'hold-line-scroll-up)
@@ -441,6 +469,9 @@
 (bind-key "C-," 'decrease-window-width)
 (bind-key "C-." 'increase-window-width)
 
+;; Toggle Fullscreen
+(bind-key "C-c f" 'toggle-fullscreen)
+
 ;; Reload File
 (bind-key  [f5] 'revert-buffer)
 (bind-key  [C-f5] 'revert-buffer-with-coding-system)
@@ -450,6 +481,16 @@
 (bind-key "C-x <down>" 'windmove-down)
 (bind-key "C-x <right>" 'windmove-right)
 (bind-key "C-x <left>" 'windmove-left)
+
+;; search in GitHub/Google
+(bind-key "C-c G" 'search-github)
+(bind-key "C-c g" 'search-google)
+
+;; automatically add the comment.
+(bind-key "C-c j" 'comment-dwim)
+
+;; Align Text use "="
+(bind-key "C-c k" 'align-to-equals)
 
 (provide 'init)
 ;;; init.el ends here
