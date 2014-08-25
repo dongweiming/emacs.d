@@ -11,7 +11,6 @@
   :group 'theme)
 
 (defface mode-line-read-only-face '((t (:foreground "#4271ae"
-                                                    :box '(:line-width 2 :color "#4271ae")
                                                     :inherit mode-line)))
   "read-only-face"
   :group 'theme)
@@ -19,19 +18,20 @@
 (defface mode-line-modified-face '((t (:background "#729fcf"
                                                    :inherit 'mode-line
                                                    :foreground "#c82829"
-                                                   :box '(:line-width 2 :color "#c82829")
                                                    :background "#ffffff")))
   "modified-face"
   :group 'theme)
 
-(defface mode-line-folder-face '((t (:foreground "gray60"
+(defface mode-line-folder-face '((t (:foreground "gray70"
+                                                 :family "Wawati SC"
                                                  :inherit mode-line)))
   "folder-face"
   :group 'theme)
 
-(defface mode-line-filename-face '((t (:foreground "yellow"
+(defface mode-line-filename-face '((t (:foreground "orchid1"
+                                                   :background "gray100"
                                                    :weight bold
-                                                   :inherit mode-line)))
+                                                   :family "Wawati SC")))
   "folder-face"
   :group 'theme)
 
@@ -85,17 +85,13 @@
                                 ((buffer-modified-p)
                                  (powerline-raw " ** " 'mode-line-modified-face))
                                 (t "      "))
-                          (powerline-raw " ")
+                          (funcall separator-left face1 face2)
                           (powerline-raw (shorten-directory default-directory 30) 'mode-line-folder-face)
                           (powerline-raw "%b" 'mode-line-filename-face)
-                          (funcall separator-left mode-line face1)
-                          (powerline-narrow face1 'l)
                           (powerline-simpler-vc-mode (powerline-vc face1))))
                         (rhs
                          (list
                           (powerline-raw global-mode-string face1 'r)
-                          (funcall separator-right face1 mode-line)
-                          (powerline-raw " ")
 
                           (if (display-graphic-p)
                               (nyan-create)
@@ -115,8 +111,8 @@
                               (concat
                                (powerline-raw " :" face2)
                                (powerline-simpler-minor-display (powerline-minor-modes face2 'l))
-                               (powerline-raw " " face2)
-                               (funcall separator-right face2 face1))))))
+                               (powerline-raw " " face2)))
+                               (funcall separator-right face2 face1))))
                      (concat
                       (powerline-render lhs)
                       (if (not (display-graphic-p))

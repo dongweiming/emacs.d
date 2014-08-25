@@ -45,7 +45,6 @@
 ; highlight URLs in comments/strings
 (add-hook 'find-file-hooks 'goto-address-prog-mode)
 
-
 (defun load-local (file)
   (load (f-expand file user-emacs-directory)))
 
@@ -61,7 +60,6 @@
  '(custom-safe-themes (quote ("6a37be365d1d95fad2f4d185e51928c789ef7a4ccf17e7ca13ad63a8bf5b922f" default))))
 
 (load-theme 'solarized-dark :no-confirm)
-(add-hook 'after-init-hook 'global-color-identifiers-mode)
 
 (add-hook 'emacs-startup-hook
           (lambda ()
@@ -369,6 +367,15 @@
     (setq savehist-file (expand-file-name ".savehist" tmp-dir))
     (savehist-mode)))
 
+(use-package isend-mode
+  :bind (("C-c t" . isend-send)
+         ("C-c y" . isend-associate))
+  :config
+  (progn
+    (add-hook 'isend-mode-hook 'isend-default-shell-setup)
+    (add-hook 'isend-mode-hook 'isend-default-python-setup)
+    (add-hook 'isend-mode-hook 'isend-default-ipython-setup)))
+
 (use-package smart-mode-line
   :init (sml/setup)
   :config
@@ -415,8 +422,8 @@
 (use-package ein
   :config
   (setq ein:use-auto-complete 1)
-  :bind (("C-c !" . python-shell-switch-to-shell)
-         ("C-c |" . python-shell-send-region)))
+  :bind (("C-c e" . run-python)
+         ("C-c r" . python-shell-send-region)))
 
 ;;;; Fonts faces
 
@@ -451,6 +458,9 @@
  '(markdown-math-face ((t (:inherit font-lock-string-face :foreground "#cb4b16" :slant italic))))
  '(minibuffer-prompt ((t (:foreground "#729fcf" :bold t))))
  '(mode-line ((t (:background "light green" :foreground "grey22" :inverse-video t :box nil :underline nil :slant normal :weight normal))))
+ '(mode-line-filename-face ((t (:background "gray100" :foreground "orchid1" :weight bold :family "Wawati SC"))))
+ '(mode-line-folder-face ((t (:inherit mode-line :foreground "gray70" :family "Wawati SC"))))
+ '(mode-line-inactive ((t (:inherit mode-line :background "#404045" :foreground "gray80" :inverse-video nil :box nil :underline nil :slant normal :weight normal))))
  '(mumamo-background-chunk-major ((t (:background "#002b36"))))
  '(py-variable-name-face ((t (:inherit default :foreground "#268bd2"))))
  '(show-paren-match ((t (:foreground "#000000" :background "#F0F6FC" :weight bold))) t)
