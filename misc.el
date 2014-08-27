@@ -60,6 +60,9 @@
 ;; eliminate long "yes" or "no" prompts
 (fset 'yes-or-no-p 'y-or-n-p)
 
+;; Use normal tabs in makefiles
+(add-hook 'makefile-mode-hook 'indent-tabs-mode)
+
 ;; Emacs has a complex mechanism to handle the vicissitudes of
 ;; function key and modifier encodings on various terminal types.
 (define-key input-decode-map "\e\eOA" [(meta up)])

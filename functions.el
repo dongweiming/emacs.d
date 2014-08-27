@@ -14,7 +14,7 @@
 ;; From http://emacsredux.com/blog/2013/04/28/switch-to-previous-buffer/
 (defun switch-to-previous-buffer ()
   "Switch to previously open buffer.
-Repeated invocations toggle between the two most recently open buffers."
+  Repeated invocations toggle between the two most recently open buffers."
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) 1)))
 
@@ -150,7 +150,6 @@ Repeated invocations toggle between the two most recently open buffers."
   (set-frame-parameter
    nil 'fullscreen
    (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
-
 (defun align-to-equals ()
   (interactive)
   (let (beg end)

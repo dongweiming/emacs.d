@@ -27,20 +27,20 @@
 (bind-key "C-x C-f" 'helm-find-files)
 (bind-key "M-x" 'helm-M-x)
 (bind-key "M-l" 'helm-eshell-history)
+
+; eshell
 (add-hook 'eshell-mode-hook
           #'(lambda ()
+              (setq eshell-prompt-function
+                    (lambda ()
+                      (concat "[" (user-login-name) "@" (system-name) " " (eshell/pwd) "]"
+                              (if (= (user-uid) 0) "# " "$ "))))
               (define-key eshell-mode-map
                 [remap eshell-pcomplete]
                 'helm-esh-pcomplete)))
 
 (setq default-directory (f-full (getenv "HOME")))
 (exec-path-from-shell-initialize)
-
-; autopep8
-(add-hook 'before-save-hook 'py-autopep8-before-save)
-
-; whitespace
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ; highlight URLs in comments/strings
 (add-hook 'find-file-hooks 'goto-address-prog-mode)
@@ -49,10 +49,6 @@
   (load (f-expand file user-emacs-directory)))
 
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(anzu-deactivate-region t)
  '(anzu-mode-lighter "")
  '(anzu-replace-to-string-separator " => ")
@@ -72,6 +68,8 @@
 (load-local "functions")
 (load-local "theme")
 (load-local "hs-minor-mode-conf")
+;; Map files to modes
+(load-local "mode-mappings")
 (when (eq system-type 'darwin)
   (load-local "osx"))
 
@@ -85,6 +83,7 @@
 (use-package hl-line
   :config (set-face-background 'hl-line "#073642"))
 
+; A modern list api for Emacs
 (use-package dash
   :config (dash-enable-font-lock))
 
@@ -316,17 +315,19 @@
 
 (use-package rainbow-mode
   :config
-  (progn
-    (add-hook 'html-mode-hook 'rainbow-mode)
-    (add-hook 'web-mode-hook 'rainbow-mode)
-    (add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
-    (add-hook 'css-mode-hook 'rainbow-mode)))
+  (--each '(html-mode-hook
+            web-mode-hook
+            emacs-lisp-mode-hook
+            css-mode-hook
+            scss-mode-hook
+            sass-mode-hook)
+    (add-hook it 'rainbow-mode)))
 
 (use-package drag-stuff
   :config
   (progn
-    (drag-stuff-global-mode t)))
-;(setq drag-stuff-modifier '(control shift))))
+    (drag-stuff-global-mode t)
+    (setq drag-stuff-modifier 'shift)))
 
 (use-package plim-mode
   :init (progn
@@ -336,7 +337,13 @@
 (use-package expand-region
   :bind (("C-c x" . er/expand-region)))
 
-;; Open files remotley through ssh; or open in su(do).
+(use-package smart-forward
+  :bind (("C-<up>" . smart-up)
+         ("C-<down>" . smart-down)
+         ("C-<left>" . smart-backward)
+         ("C-<right>" . smart-forward)))
+
+;; Open ssh; or open in su(do).
 ;;
 ;;  Normally: C-x C-f /path/to/file
 ;;  Through ssh: C-x C-f /ssh:username@myhost.univ:/path/to/file
@@ -404,26 +411,44 @@
 
 ;;;; Python
 
-(add-hook 'python-mode-hook 'jedi:setup)
-(setq jedi:complete-on-dot t)
-(setq
- python-shell-interpreter "ipython"
- python-shell-interpreter-args ""
- python-shell-prompt-regexp "In \\[[0-9]+\\]: "
- python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
- python-shell-completion-setup-code
+;; custoize variable
+(defvar auto-pep8 t
+  "Automated autopep8.")
+
+(defvar delete-trailing-whitespace t
+  "Automated delete trailing whitespace.")
+
+(use-package python-mode
+  :config
+  (add-hook 'python-mode-hook 'jedi:setup)
+  (setq jedi:complete-on-dot t)
+  (setq
+   python-shell-interpreter "ipython"
+   python-shell-interpreter-args ""
+   python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+   python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+   python-shell-completion-setup-code
    "from IPython.core.completerlib import module_completion"
- python-shell-completion-module-string-code
+   python-shell-completion-module-string-code
    "';'.join(module_completion('''%s'''))\n"
- python-shell-completion-string-code
+   python-shell-completion-string-code
    "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
-(setenv "LC_CTYPE" "UTF-8")
+  (setenv "LC_CTYPE" "UTF-8")
+  ; autopep8
+  (if auto-pep8
+      (add-hook 'before-save-hook 'py-autopep8-before-save))
+  ; whitespace
+  (if delete-trailing-whitespace
+      (add-hook 'before-save-hook 'delete-trailing-whitespace)))
 
 (use-package ein
   :config
   (setq ein:use-auto-complete 1)
-  :bind (("C-c e" . run-python)
-         ("C-c r" . python-shell-send-region)))
+  :bind (("C-c e" . run-python)))
+
+(use-package change-inner
+  :bind (("M-i" . change-inner)
+         ("M-o" . change-outer)))
 
 ;;;; Fonts faces
 
@@ -482,6 +507,9 @@
 
 ;; Toggle Fullscreen
 (bind-key "C-c f" 'toggle-fullscreen)
+
+(if (display-graphic-p)
+    (toggle-fullscreen))
 
 ;; Reload File
 (bind-key  [f5] 'revert-buffer)
