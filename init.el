@@ -17,6 +17,8 @@
 (require 'use-package)
 (require 'python-environment)
 (require 'py-autopep8)
+(require 'css-complete)
+(bind-key "C-x j j" 'css-complete)
 (if (display-graphic-p)
     (require 'nyan-mode))
 
@@ -24,17 +26,15 @@
 (require 'helm-config)
 (setq enable-recursive-minibuffers t)
 (bind-key "C-c h" 'helm-mini)
+(bind-key "M-l" 'helm-locate)
+(bind-key "M-t" 'helm-top)
 (bind-key "C-x C-f" 'helm-find-files)
-(bind-key "M-x" 'helm-M-x)
+;(bind-key "M-x" 'helm-M-x)
 (bind-key "M-l" 'helm-eshell-history)
 
 ; eshell
 (add-hook 'eshell-mode-hook
           #'(lambda ()
-              (setq eshell-prompt-function
-                    (lambda ()
-                      (concat "[" (user-login-name) "@" (system-name) " " (eshell/pwd) "]"
-                              (if (= (user-uid) 0) "# " "$ "))))
               (define-key eshell-mode-map
                 [remap eshell-pcomplete]
                 'helm-esh-pcomplete)))
@@ -64,6 +64,7 @@
 
 ;;;; Local
 
+(load-local "helper")
 (load-local "misc")
 (load-local "functions")
 (load-local "theme")
@@ -93,14 +94,13 @@
 (use-package smex
   :init (smex-initialize)
   :bind (("M-x" . smex)
-         ("M-X" . smex-major-mode-commands)
-         ("C-c C-c M-x" . execute-extended-command))
-  :config (setq smex-save-file (expand-file-name ".smex-items" tmp-dir)))
+         ("M-X" . smex-major-mode-commands)))
+  :config (setq smex-save-file (expand-file-name ".smex-items" tmp-dir))
 
 (use-package sql
   :config
   (progn
-    (add-hook 'js2-mode-hook (lambda ()
+    (add-hook 'sql-mode-hook (lambda ()
                                (setq sql-product 'mysql)
                                (sql-highlight-mysql-keywords)))))
 
@@ -128,21 +128,12 @@
 
 (use-package ace-jump-mode
   :bind (("C-c SPC" . ace-jump-word-mode)
-         ("C-c C-c SPC" . ace-jump-line-mode)))
-
-(use-package cua-base
-  :init (cua-mode 1)
-  :config
-  (progn
-    (setq cua-enable-cua-keys nil)
-    (setq cua-toggle-set-mark nil)))
-
-(windmove-default-keybindings)
-(setq windmove-wrap-around t)
+         ("C-c TAB" . ace-jump-line-mode)))
 
 (use-package multiple-cursors
-  :bind (("C->" . mc/mark-next-like-this)
-         ("C-<" . mc/mark-previous-like-this)))
+  :bind (("C-c m" . mc/mark-next-like-this)
+         ("C-c ;" . mc/edit-lines)
+         ("C-c n" . mc/mark-previous-like-this)))
 
 (use-package magit
   :init
@@ -157,7 +148,7 @@
     (setq magit-stage-all-confirm nil)
     (setq magit-unstage-all-confirm nil)
     (setq magit-restore-window-configuration t)
-   (add-hook 'magit-mode-hook 'rinari-launch))
+    (add-hook 'magit-mode-hook 'rinari-launch))
   :bind ("C-x g" . magit-status))
 
 ;; When you visit a file, point goes to the last place where it was when you previously visited the same file.
@@ -167,15 +158,10 @@
     (setq-default save-place t)
     (setq save-place-file "~/.emacs.d/saved-places")))
 
-(use-package windmove
-  :config (windmove-default-keybindings 'shift))
-(put 'upcase-region 'disabled nil)
-
 (use-package flycheck
   :config
   (progn
-    (add-hook 'after-init-hook 'global-flycheck-mode)
-    (add-hook 'before-save-hook #'flycheck-list-errors-only-when-errors)))
+    (add-hook 'after-init-hook 'global-flycheck-mode)))
 
 (use-package yasnippet
   :init
@@ -183,10 +169,6 @@
     (use-package yasnippets)
     (yas-global-mode 1)
     (setq-default yas/prompt-functions '(yas/ido-prompt))))
-
-(use-package python
-  :mode ("\\.py\\'" . python-mode)
-  :interpreter ("python" . python-mode))
 
 (use-package yaml-mode
   :mode ("\\.yml$" . yaml-mode))
@@ -203,19 +185,16 @@
     (add-to-list 'auto-mode-alist '("\\.mako\\'" . html-mode))
     (mmm-add-mode-ext-class 'html-mode "\\.mako\\'" 'mako)))
 
-(use-package js-mode
-  :mode ("\\.json$" . js-mode)
-  :init
-  (progn
-    (add-hook 'js-mode-hook (lambda () (setq js-indent-level 4)))))
-
 (use-package js2-mode
-  :mode (("\\.js$" . js2-mode)
-         ("Jakefile$" . js2-mode))
+  :mode (("\\.js$" . js2-mode))
   :interpreter ("node" . js2-mode)
   :config
   (progn
-    (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 4)))))
+    (setq js2-use-font-lock-faces t)
+    (add-hook 'js-mode-hook 'js2-minor-mode)
+    (add-hook 'js2-mode-hook (lambda ()
+                               (ac-js2-mode)
+                               (setq js2-basic-offset 4)))))
 
 (use-package js3-mode
   :config
@@ -231,26 +210,12 @@
     (add-hook 'coffee-mode-hook
               (lambda ()
                 (setq coffee-tab-width 2)
+                (setq coffee-args-compile '("-c" "-m"))
+                (add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point)
                 (setq coffee-cleanup-whitespace nil)))))
 
 (use-package sh-script
   :config (setq sh-basic-offset 4))
-
-(use-package emacs-lisp-mode
-  :init
-  (progn
-    (use-package eldoc
-      :init (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode))
-    (use-package macrostep
-      :bind ("C-c e" . macrostep-expand))
-    (use-package ert
-      :config (add-to-list 'emacs-lisp-mode-hook 'ert--activate-font-lock-keywords)))
-  :bind (("M-&" . lisp-complete-symbol)
-         ("M-." . find-function-at-point))
-  :interpreter (("emacs" . emacs-lisp-mode))
-  :mode ("Cask" . emacs-lisp-mode))
-
-(use-package haml-mode)
 
 (use-package anzu
   :init (global-anzu-mode +1)
@@ -269,7 +234,7 @@
 (use-package scss-mode
   :config
   (progn
-    ;; Default not excute scss-compile
+    ;; Default not execute scss-compile
     (setq scss-compile-at-save nil)))
 
 
@@ -283,6 +248,11 @@
   (progn
     (setq eshell-history-size 5000)
     (setq eshell-save-history-on-exit t)))
+
+(use-package plim-mode
+  :init (progn
+          (add-to-list 'auto-mode-alist '("\\.plim\\'" . plim-mode))
+          (add-to-list 'auto-mode-alist '("\\.html\\'" . plim-mode))))
 
 (use-package web-mode
   :init (progn
@@ -328,11 +298,6 @@
   (progn
     (drag-stuff-global-mode t)
     (setq drag-stuff-modifier 'shift)))
-
-(use-package plim-mode
-  :init (progn
-          (add-to-list 'auto-mode-alist '("\\.slim\\'" . plim-mode))
-          (add-to-list 'auto-mode-alist '("\\.html\\'" . plim-mode))))
 
 (use-package expand-region
   :bind (("C-c x" . er/expand-region)))
@@ -409,19 +374,29 @@
 ;    (setq fci-rule-color "#2075c7")
 ;    (global-fci-mode 1)))
 
+(use-package change-inner
+  :bind (("M-i" . change-inner)
+         ("M-o" . change-outer)))
+
 ;;;; Python
 
 ;; custoize variable
-(defvar auto-pep8 t
-  "Automated autopep8.")
 
-(defvar delete-trailing-whitespace t
-  "Automated delete trailing whitespace.")
+(setq delete-trailing-whitespace t)
+(setq auto-pep8 t)
+
+(install-switch-mode "dtw" delete-trailing-whitespace)
+(install-switch-mode "ap" auto-pep8)
+
+(defun for-python ()
+  (if auto-pep8
+      (add-hook 'before-save-hook 'py-autopep8-before-save))
+  (if delete-trailing-whitespace
+      (delete-trailing-whitespace))
+  (add-hook 'before-save-hook 'flycheck-list-errors-only-when-errors))
 
 (use-package python-mode
-  :config
-  (add-hook 'python-mode-hook 'jedi:setup)
-  (setq jedi:complete-on-dot t)
+  :init
   (setq
    python-shell-interpreter "ipython"
    python-shell-interpreter-args ""
@@ -433,22 +408,20 @@
    "';'.join(module_completion('''%s'''))\n"
    python-shell-completion-string-code
    "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
-  (setenv "LC_CTYPE" "UTF-8")
-  ; autopep8
-  (if auto-pep8
-      (add-hook 'before-save-hook 'py-autopep8-before-save))
-  ; whitespace
-  (if delete-trailing-whitespace
-      (add-hook 'before-save-hook 'delete-trailing-whitespace)))
+  :config
+  (progn
+    (add-hook 'python-mode-hook 'jedi:setup)
+    (setq jedi:complete-on-dot t)
+    (add-hook 'python-mode-hook 'for-python)
+    (setenv "LC_CTYPE" "UTF-8"))
+  :bind (("C-c e" . run-python)))
+
+(add-hook 'python-mode-hook 'for-python)
+
 
 (use-package ein
   :config
-  (setq ein:use-auto-complete 1)
-  :bind (("C-c e" . run-python)))
-
-(use-package change-inner
-  :bind (("M-i" . change-inner)
-         ("M-o" . change-outer)))
+  (setq ein:use-auto-complete 1))
 
 ;;;; Fonts faces
 
@@ -494,16 +467,18 @@
 
 ;;;; Bindings
 
-(bind-key "RET" 'newline-and-indent)
-(bind-key "C-z" 'undo)
+(bind-key "C-x h" 'my-help)
+
+(bind-key "RET  " 'newline-and-indent)
+(bind-key "C-z  " 'undo)
 (bind-key "C-c b" 'switch-to-previous-buffer)
-(bind-key "M-n" 'hold-line-scroll-up)
-(bind-key "M-p" 'hold-line-scroll-down)
+(bind-key "M-n  " 'hold-line-scroll-up)
+(bind-key "M-p  " 'hold-line-scroll-down)
 (bind-key "C-c v" 'py-taglist)
-(bind-key "C->" 'increase-window-height)
-(bind-key "C-<" 'decrease-window-height)
-(bind-key "C-," 'decrease-window-width)
-(bind-key "C-." 'increase-window-width)
+(bind-key "C-c >  " 'increase-window-height)
+(bind-key "C-c <  " 'decrease-window-height)
+(bind-key "C-c ,  " 'decrease-window-width)
+(bind-key "C-c .  " 'increase-window-width)
 
 ;; Toggle Fullscreen
 (bind-key "C-c f" 'toggle-fullscreen)

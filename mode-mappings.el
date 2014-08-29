@@ -21,4 +21,7 @@
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 
+;; html-mode
+(add-to-list 'auto-mode-alist '("\\.html$" . html-mode))
+
 (provide 'mode-mappings)

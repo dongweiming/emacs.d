@@ -4,6 +4,7 @@
 
 (depends-on "smex")
 (depends-on "s")
+(depends-on "f")
 (depends-on "ace-jump-mode")
 (depends-on "exec-path-from-shell")
 (depends-on "ag")
@@ -26,6 +27,7 @@
 (depends-on "commander")
 (depends-on "dash")
 (depends-on "git")
+(depends-on "ac-js2")
 (depends-on "js2-mode")
 (depends-on "js3-mode")
 (depends-on "markdown-mode")
@@ -40,6 +42,7 @@
 (depends-on "yaml-mode")
 (depends-on "yasnippet")
 (depends-on "helm")
+(depends-on "rinari")
 (depends-on "mmm-mako")
 (depends-on "projectile")
 (depends-on "multiple-cursors")

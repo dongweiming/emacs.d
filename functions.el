@@ -1,3 +1,9 @@
+;;; package --- Summary
+
+;;; Commentary:
+
+;;; Code:
+
 (defun system-is-mac ()
   (interactive)
   (string-equal system-type "darwin"))
@@ -150,6 +156,7 @@
   (set-frame-parameter
    nil 'fullscreen
    (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
+
 (defun align-to-equals ()
   (interactive)
   (let (beg end)
@@ -180,5 +187,16 @@ PROMPT sets the `read-string prompt."
 
 (install-search-engine "google"     "http://www.google.com/search?q="              "Google: ")
 (install-search-engine "github"     "https://github.com/search?q="                 "Search GitHub: ")
+
+(defun swith-mode (mode-name mode)
+  (interactive)
+  (message (format "set [%s] to %s" mode-name (if mode "off" "on")))
+  (setq mode (if mode nil t)))
+
+(defmacro install-switch-mode (mode-name mode)
+  `(defun ,(intern (format "switch-%s" mode-name)) ()
+     ,(format "Can switch some feature on/off")
+     (interactive)
+     (swith-mode ,mode-name ,mode)))
 
 ;;; functions.el ends here

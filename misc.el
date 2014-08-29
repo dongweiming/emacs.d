@@ -68,5 +68,7 @@
 (define-key input-decode-map "\e\eOA" [(meta up)])
 (define-key input-decode-map "\e\eOB" [(meta down)])
 
+(setq windmove-wrap-around t)
+
 (provide 'misc)
 ;;; misc.el ends here
