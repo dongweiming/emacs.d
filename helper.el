@@ -18,6 +18,10 @@ M-t             ->helm-top.
 C-x h           ->emacs-bindings-help.
 C-c p d         ->display all dirs in the project.
 
+Specific auto Mode(Use M-x):
+\n
+auto-pep8       auto pep8 mode
+auto-dtw        auto delete trailing whitespace mode
 
 == Help Map ==
 key             binding

@@ -76,6 +76,8 @@
 
 ;;;; Packages
 
+(use-package ht)
+
 (use-package powerline
   :config
   (powerline-ha-theme))
@@ -237,7 +239,6 @@
     ;; Default not execute scss-compile
     (setq scss-compile-at-save nil)))
 
-
 (use-package eshell
   :bind ("M-e" . eshell)
   :init
@@ -380,20 +381,29 @@
 
 ;;;; Python
 
-;; custoize variable
+(define-minor-mode auto-pep8
+  :init-value t
+  "Autopep8 mode")
 
-(setq delete-trailing-whitespace t)
-(setq auto-pep8 t)
+(define-minor-mode auto-dtw
+  :init-value t
+  "Auto delete trailing whitespace")
 
-(install-switch-mode "dtw" delete-trailing-whitespace)
-(install-switch-mode "ap" auto-pep8)
 
-(defun for-python ()
+;(install-switch-mode "dtw" auto-dtw 'delete-trailing-whitespace)
+;(install-switch-mode "ap" auto-pep8, 'py-autopep8-before-save)
+
+
+(defun python-hooks ()
   (if auto-pep8
-      (add-hook 'before-save-hook 'py-autopep8-before-save))
-  (if delete-trailing-whitespace
-      (delete-trailing-whitespace))
-  (add-hook 'before-save-hook 'flycheck-list-errors-only-when-errors))
+      (add-hook 'before-save-hook 'py-autopep8-before-save)
+    (remove-hook 'before-save-hook 'py-autopep8-before-save))
+
+  (if auto-dtw
+      (add-hook 'before-save-hook 'delete-trailing-whitespace)
+    (remove-hook 'before-save-hook 'delete-trailing-whitespace))
+
+  (flycheck-list-errors-only-when-errors))
 
 (use-package python-mode
   :init
@@ -412,11 +422,12 @@
   (progn
     (add-hook 'python-mode-hook 'jedi:setup)
     (setq jedi:complete-on-dot t)
-    (add-hook 'python-mode-hook 'for-python)
     (setenv "LC_CTYPE" "UTF-8"))
   :bind (("C-c e" . run-python)))
 
-(add-hook 'python-mode-hook 'for-python)
+(add-hook 'python-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook 'python-hooks)))
 
 
 (use-package ein

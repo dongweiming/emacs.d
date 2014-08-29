@@ -137,6 +137,20 @@
   (interactive "p")
   (enlarge-window arg t))
 
+(defun swith-mode (mode-name mode fn)
+  (interactive)
+  (message (format "set [%s] to %s" mode-name (if mode "off" "on")))
+  (setq mode nil)
+  (if mode
+      (remove-hook 'before-save-hook fn)
+    (add-hook 'before-save-hook fn)))
+
+(defmacro install-switch-mode (mode-name mode fn)
+  `(defun ,(intern (format "switch-%s" mode-name)) ()
+     ,(format "Can switch some feature on/off")
+     (interactive)
+     (swith-mode ,mode-name ,mode ,fn)))
+
 (defun shorten-directory (dir max-length)
   "Show up to `max-length' characters of a directory name `dir'."
   (let ((path (reverse (split-string (abbreviate-file-name dir) "/")))
@@ -187,16 +201,5 @@ PROMPT sets the `read-string prompt."
 
 (install-search-engine "google"     "http://www.google.com/search?q="              "Google: ")
 (install-search-engine "github"     "https://github.com/search?q="                 "Search GitHub: ")
-
-(defun swith-mode (mode-name mode)
-  (interactive)
-  (message (format "set [%s] to %s" mode-name (if mode "off" "on")))
-  (setq mode (if mode nil t)))
-
-(defmacro install-switch-mode (mode-name mode)
-  `(defun ,(intern (format "switch-%s" mode-name)) ()
-     ,(format "Can switch some feature on/off")
-     (interactive)
-     (swith-mode ,mode-name ,mode)))
 
 ;;; functions.el ends here

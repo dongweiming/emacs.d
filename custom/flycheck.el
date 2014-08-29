@@ -85,7 +85,7 @@ buffer-local wherever it is set."
     (add-to-list 'debug-ignored-errors
                  (rx string-start "No more Flycheck errors" string-end))
     (add-to-list 'debug-ignored-errors
-                 (rx string-start "Flycheck mode disabled-end))
+                 (rx string-start "Flycheck mode disabled" string-end))
     (add-to-list 'debug-ignored-errors
                  (rx string-start "Configured syntax checker "
                      symbol-start (one-or-more not-newline) symbol-end
@@ -467,7 +467,7 @@ If nil, never check syntax automatically.  In this case, use
   :package-version '(flycheck . "0.12")
   :safe #'symbolp)
 
-(defcustom flycheck-idle-change-delay 0.01
+(defcustom flycheck-idle-change-delay 0.5
   "How many seconds to wait before checking syntax automatically.
 
 After the buffer was changed, Flycheck will wait as many seconds

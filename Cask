@@ -7,6 +7,7 @@
 (depends-on "f")
 (depends-on "ace-jump-mode")
 (depends-on "exec-path-from-shell")
+(depends-on "ht")
 (depends-on "ag")
 (depends-on "switch-window")
 (depends-on "nyan-mode")

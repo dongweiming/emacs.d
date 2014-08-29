@@ -70,5 +70,7 @@
 
 (setq windmove-wrap-around t)
 
+(setq debug-on-error t)
+
 (provide 'misc)
 ;;; misc.el ends here
