@@ -17,8 +17,6 @@
 (require 'use-package)
 (require 'python-environment)
 (require 'py-autopep8)
-(require 'css-complete)
-(bind-key "C-x j j" 'css-complete)
 (if (display-graphic-p)
     (require 'nyan-mode))
 
@@ -73,6 +71,8 @@
 (load-local "mode-mappings")
 (when (eq system-type 'darwin)
   (load-local "osx"))
+(load-local "pli")
+(use-package pli)
 
 ;;;; Packages
 
@@ -256,9 +256,6 @@
           (add-to-list 'auto-mode-alist '("\\.html\\'" . plim-mode))))
 
 (use-package web-mode
-  :init (progn
-          (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-          (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
   :config (progn
             (add-hook 'web-mode-hook
                       (lambda ()
@@ -297,17 +294,16 @@
 (use-package drag-stuff
   :config
   (progn
-    (drag-stuff-global-mode t)
-    (setq drag-stuff-modifier 'shift)))
+    (drag-stuff-global-mode t)))
 
 (use-package expand-region
   :bind (("C-c x" . er/expand-region)))
 
 (use-package smart-forward
-  :bind (("C-<up>" . smart-up)
-         ("C-<down>" . smart-down)
-         ("C-<left>" . smart-backward)
-         ("C-<right>" . smart-forward)))
+  :bind (("C-c <up>" . smart-up)
+         ("C-c <down>" . smart-down)
+         ("C-c <left>" . smart-backward)
+         ("C-c <right>" . smart-forward)))
 
 ;; Open ssh; or open in su(do).
 ;;
@@ -366,33 +362,30 @@
                                 "FlyC.*"))
     (setq sml/hidden-modes (mapconcat 'identity useless-minor-modes "\\| *"))))
 
-; (use-package fill-column-indicator
-;  :init (define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
-;  :config
-;  (progn
-;    (setq-default fci-rule-column 80)
-;    (setq fci-rule-width 2)
-;    (setq fci-rule-color "#2075c7")
-;    (global-fci-mode 1)))
+;; Lisp
 
-(use-package change-inner
-  :bind (("M-i" . change-inner)
-         ("M-o" . change-outer)))
+;;;; Auto Insert by yasnippet
 
-;;;; Python
+(defun my-autoinsert-yas-expand()
+  "Replace text in yasnippet template."
+  (yas-expand-snippet (buffer-string) (point-min) (point-max)))
+
+(setq-default auto-insert-directory (expand-file-name "auto-insert" init-dir))
+(auto-insert-mode)
+(setq auto-insert-query nil)
+
+(define-auto-insert "\\.el$" ["elisp-auto-insert" my-autoinsert-yas-expand])
+(define-auto-insert "\\.py$" ["python-auto-insert" my-autoinsert-yas-expand])
+
+;; Python
 
 (define-minor-mode auto-pep8
   :init-value t
-  "Autopep8 mode")
+  "Autopep8 ")
 
 (define-minor-mode auto-dtw
   :init-value t
-  "Auto delete trailing whitespace")
-
-
-;(install-switch-mode "dtw" auto-dtw 'delete-trailing-whitespace)
-;(install-switch-mode "ap" auto-pep8, 'py-autopep8-before-save)
-
+  "Autodwt ")
 
 (defun python-hooks ()
   (if auto-pep8
@@ -433,6 +426,14 @@
 (use-package ein
   :config
   (setq ein:use-auto-complete 1))
+
+(use-package zencoding-mode
+  :config
+  (add-hook 'sgml-mode-hook 'zencoding-mode)
+  :bind
+  ("M-TAB" . zencoding-expand-line))
+
+(use-package crontab-mode)
 
 ;;;; Fonts faces
 
@@ -483,8 +484,8 @@
 (bind-key "RET  " 'newline-and-indent)
 (bind-key "C-z  " 'undo)
 (bind-key "C-c b" 'switch-to-previous-buffer)
-(bind-key "M-n  " 'hold-line-scroll-up)
-(bind-key "M-p  " 'hold-line-scroll-down)
+(bind-key "M-p  " 'hold-line-scroll-up)
+(bind-key "M-n  " 'hold-line-scroll-down)
 (bind-key "C-c v" 'py-taglist)
 (bind-key "C-c >  " 'increase-window-height)
 (bind-key "C-c <  " 'decrease-window-height)
@@ -510,6 +511,7 @@
 ;; search in GitHub/Google
 (bind-key "C-c G" 'search-github)
 (bind-key "C-c g" 'search-google)
+(bind-key "C-c q" 'search-code)
 
 ;; automatically add the comment.
 (bind-key "C-c j" 'comment-dwim)

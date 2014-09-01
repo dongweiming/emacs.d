@@ -201,5 +201,6 @@ PROMPT sets the `read-string prompt."
 
 (install-search-engine "google"     "http://www.google.com/search?q="              "Google: ")
 (install-search-engine "github"     "https://github.com/search?q="                 "Search GitHub: ")
+(install-search-engine "code"       "http://code.dapps.douban.com/hub/search?q="   "Search Code: ")
 
 ;;; functions.el ends here

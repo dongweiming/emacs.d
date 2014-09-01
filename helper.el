@@ -48,10 +48,11 @@ C-x C-b         ibuffer
 C-x C-a         ag-project
 M <up/down>     drag-stuff
 C-c x           expand-region
-C-<up>          smart-up
-C-<down>        smart-down
-C-<left>        smart-backward
-C-<right>       smart-forward
+M-TAB           zencoding-expand-line
+C-c <up>          smart-up
+C-c <down>        smart-down
+C-c <left>        smart-backward
+C-c <right>       smart-forward
 C-x C-r         open-recentf-file
 C-c t           isend-send
 C-c y           isend-associate
@@ -59,12 +60,13 @@ M-i             change-inner
 M-o             change-outer
 C-z             undo
 C-c b           switch-to-previous-buffer
-M-n             hold-line-scroll-up
-M-p             hold-line-scroll-down
+M-p             hold-line-scroll-up
+M-n             hold-line-scroll-down
 C-c v           func/class list
 C-c f           toggle-fullscreen ; Only for GUI
 C-c G           search github
 C-c g           search google
+C-c q           search douban code
 C-c j           add or delete comment
 C-c k           align-text by =
 C-c w           hs-hide-block
