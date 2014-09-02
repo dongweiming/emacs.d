@@ -43,7 +43,6 @@
 (depends-on "yasnippet")
 (depends-on "helm")
 (depends-on "rinari")
-(depends-on "mmm-mako")
 (depends-on "projectile")
 (depends-on "multiple-cursors")
 (depends-on "js2-refactor")

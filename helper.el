@@ -74,6 +74,15 @@ C-c W           hs-show-block
 C-c s           hs-hide-all
 C-c S           hs-show-all
 C-c c           hs-toggle-hiding
+\n
+Web mode:
+
+C-c C-f         code folding
+C-c C-m         selection and expansion
+C-c C-i         indent entire buffer
+C-c C-d d       show tag mismatch
+C-c C-d n       normalize
+C-c C-e i       select element content
 ")
 
 (defcustom help-scroll-amount nil

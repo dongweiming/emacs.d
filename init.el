@@ -71,8 +71,6 @@
 (load-local "mode-mappings")
 (when (eq system-type 'darwin)
   (load-local "osx"))
-(load-local "pli")
-(use-package pli)
 
 ;;;; Packages
 
@@ -179,13 +177,6 @@
   :config
   (progn
     (setq css-indent-offset 4)))
-
-(use-package mmm-mako
-  :config
-  (progn
-    (setq mmm-global-mode 'maybe)
-    (add-to-list 'auto-mode-alist '("\\.mako\\'" . html-mode))
-    (mmm-add-mode-ext-class 'html-mode "\\.mako\\'" 'mako)))
 
 (use-package js2-mode
   :mode (("\\.js$" . js2-mode))
