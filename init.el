@@ -112,6 +112,12 @@
     (setq projectile-file-exists-local-cache-expire (* 5 60))
     (setq projectile-require-project-root nil)))
 
+(use-package fiplr
+  :config
+  (progn
+    (setq fiplr-ignored-globs '((directories (".git" ".svn"))
+                                (files ("*.jpg" "*.png" "*.zip" "*~"))))))
+
 (use-package ido
   :init (ido-mode 1)
   :config
@@ -129,6 +135,9 @@
 (use-package ace-jump-mode
   :bind (("C-c SPC" . ace-jump-word-mode)
          ("C-c TAB" . ace-jump-line-mode)))
+
+(use-package find-file-in-repository
+  :bind (("C-x f" . find-file-in-repository)))
 
 (use-package multiple-cursors
   :bind (("C-c m" . mc/mark-next-like-this)
@@ -391,23 +400,26 @@
 
 (use-package python-mode
   :init
-  (setq
-   python-shell-interpreter "ipython"
-   python-shell-interpreter-args ""
-   python-shell-prompt-regexp "In \\[[0-9]+\\]: "
-   python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
-   python-shell-completion-setup-code
-   "from IPython.core.completerlib import module_completion"
-   python-shell-completion-module-string-code
-   "';'.join(module_completion('''%s'''))\n"
-   python-shell-completion-string-code
-   "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
-  :config
   (progn
+    (setq
+     python-shell-interpreter "ipython"
+     python-shell-interpreter-args ""
+     python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+     python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+     python-shell-completion-setup-code
+     "from IPython.core.completerlib import module_completion"
+     python-shell-completion-module-string-code
+     "';'.join(module_completion('''%s'''))\n"
+     python-shell-completion-string-code
+     "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
     (add-hook 'python-mode-hook 'jedi:setup)
     (setq jedi:complete-on-dot t)
+    (setq py-electric-colon-active t)
     (setenv "LC_CTYPE" "UTF-8"))
-  :bind (("C-c e" . run-python)))
+  :bind (("M-." . jedi:goto-definition)
+         ("M-," . jedi:goto-definition-pop-marker)
+         ("C-c d" . jedi:show-doc)
+         ("M-SPC" . jedi:complete)))
 
 (add-hook 'python-mode-hook
           (lambda ()

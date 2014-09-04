@@ -78,5 +78,12 @@
 ;; According to matching brackets
 (show-paren-mode t)
 
+;; Paste with format
+(setq x-select-enable-clipboard t)
+(setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
+
+; ; Turn beep off
+(setq visible-bell nil)
+
 (provide 'misc)
 ;;; misc.el ends here

@@ -43,7 +43,8 @@ m-}             forward-paragraph
 M-%             anzu-query-replace
 C-M-%           anzu-query-replace-regexp
 M-e             eshell
-C-c e           run-ipython
+C-c C-p         run-ipython
+C-x f           fiplr-find-file
 C-x C-b         ibuffer
 C-x C-a         ag-project
 M <up/down>     drag-stuff

@@ -48,6 +48,8 @@
 (depends-on "js2-refactor")
 (depends-on "expand-region")
 (depends-on "rainbow-delimiters")
+(depends-on "fiplr")
+(depends-on "find-file-in-repository")
 (depends-on "plim-mode")
 (depends-on "powerline")
 (depends-on "crontab-mode")

@@ -1,6 +1,9 @@
 ;; Emacs lisp
 (add-to-list 'auto-mode-alist '("Cask$" . emacs-lisp-mode))
 
+;; Python
+(add-to-list 'auto-mode-alist '("\\.py$" . python-mode))
+
 ;; Puppet
 (autoload 'puppet-mode "puppet-mode")
 (add-to-list 'auto-mode-alist '("\\.pp$" . puppet-mode))
