@@ -24,13 +24,13 @@
 (set-default 'truncate-lines t)
 
 ;; Use utf8
-(set-language-environment "UTF-8")
+(mapc (lambda (fn) (funcall fn 'utf-8))
+      '(set-language-environment
+        set-terminal-coding-system
+        set-keyboard-coding-system
+        set-selection-coding-system
+        prefer-coding-system))
 (setq locale-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(set-selection-coding-system 'utf-8)
-(prefer-coding-system 'utf-8)
-
 
 ;; Set font size
 (set-face-attribute 'default nil :height 140)
@@ -73,6 +73,7 @@
 
 (setq windmove-wrap-around t)
 
+;; Always display error backtraces
 (setq debug-on-error t)
 
 ;; According to matching brackets

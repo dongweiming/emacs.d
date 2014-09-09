@@ -4,6 +4,8 @@
 
 ;;; Code:
 
+(setq lexical-binding t)
+(eval 'lexical-binding)
 (unless (= emacs-major-version 24)
   (error "Emacs version 24 is required"))
 
@@ -40,20 +42,41 @@
 (setq default-directory (f-full (getenv "HOME")))
 (exec-path-from-shell-initialize)
 
+; sublimity
+(if (display-graphic-p)
+    (progn
+      (require 'sublimity)
+      (require 'sublimity-map)
+      (sublimity-mode 1)
+      (setq sublimity-scroll-weight 10
+            sublimity-scroll-drift-length 5)))
+
 ; highlight URLs in comments/strings
 (add-hook 'find-file-hooks 'goto-address-prog-mode)
 
-(defun load-local (file)
-  (load (f-expand file user-emacs-directory)))
+(defun load-local (filename)
+  (let ((file (s-concat (f-expand filename user-emacs-directory) ".el")))
+  (if (f-exists? file)
+    (load-file file))))
 
 (custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector ["#262626" "#d70000" "#5f8700" "#af8700" "#0087ff" "#af005f" "#00afaf" "#626262"])
  '(anzu-deactivate-region t)
  '(anzu-mode-lighter "")
  '(anzu-replace-to-string-separator " => ")
  '(anzu-search-threshold 1000)
- '(custom-safe-themes (quote ("6a37be365d1d95fad2f4d185e51928c789ef7a4ccf17e7ca13ad63a8bf5b922f" default))))
+ '(background-color nil)
+ '(background-mode dark)
+ '(cursor-color nil)
+ '(custom-safe-themes (quote ("6a37be365d1d95fad2f4d185e51928c789ef7a4ccf17e7ca13ad63a8bf5b922f" "756597b162f1be60a12dbd52bab71d40d6a2845a3e3c2584c6573ee9c332a66e" default)))
+ '(foreground-color nil))
 
-(load-theme 'solarized-dark :no-confirm)
+(load-theme 'xiaoming t)
+;(load-theme 'solarized-dark :no-confirm)
 
 (add-hook 'emacs-startup-hook
           (lambda ()
@@ -65,8 +88,10 @@
 (load-local "helper")
 (load-local "misc")
 (load-local "functions")
-(load-local "theme")
+(load-local "modeline")
 (load-local "hs-minor-mode-conf")
+;; key-chord
+(load-local "keys")
 ;; Map files to modes
 (load-local "mode-mappings")
 (when (eq system-type 'darwin)
@@ -83,6 +108,9 @@
 (global-hl-line-mode +1)
 (use-package hl-line
   :config (set-face-background 'hl-line "#073642"))
+
+(use-package direx
+  :bind (("C-x C-j" . direx:jump-to-directory)))
 
 ; A modern list api for Emacs
 (use-package dash
@@ -159,6 +187,33 @@
     (setq magit-restore-window-configuration t)
     (add-hook 'magit-mode-hook 'rinari-launch))
   :bind ("C-x g" . magit-status))
+
+(use-package git-gutter
+  :config
+  (progn
+    (global-git-gutter-mode t)
+    (git-gutter:linum-setup)
+    (add-hook 'python-mode-hook 'git-gutter-mode)
+    (custom-set-variables
+     '(git-gutter:window-width 2)
+     '(git-gutter:modified-sign "☁")
+     '(git-gutter:added-sign "☀")
+     '(git-gutter:deleted-sign "☂")
+     '(git-gutter:unchanged-sign " ")
+     '(git-gutter:separator-sign "|")
+     '(git-gutter:hide-gutter t))
+    (set-face-background 'git-gutter:modified "purple") ;; background color
+    (set-face-foreground 'git-gutter:added "green")
+    (set-face-foreground 'git-gutter:deleted "red")
+    (set-face-background 'git-gutter:unchanged "yellow")
+    (set-face-foreground 'git-gutter:separator "yellow")
+    (add-to-list 'git-gutter:update-hooks 'focus-in-hook))
+  :bind (("C-x C-g" . git-gutter:toggle)
+         ("C-x v =" . git-gutter:popup-hunk)
+         ("C-x p" . git-gutter:previous-hunk)
+         ("C-x n" . git-gutter:next-hunk)
+         ("C-x v s" . git-gutter:stage-hunk)
+         ("C-x v r" . git-gutter:revert-hunk)))
 
 ;; When you visit a file, point goes to the last place where it was when you previously visited the same file.
 (use-package saveplace
@@ -334,7 +389,20 @@
   :config
   (progn
     (setq savehist-file (expand-file-name ".savehist" tmp-dir))
-    (savehist-mode)))
+    (savehist-mode)
+    (setq savehist-save-minibuffer-history 1)))
+
+(use-package dired-k
+  :config
+  (progn
+    (define-key dired-mode-map (kbd "K") 'dired-k)
+    (add-hook 'dired-initial-position-hook 'dired-k)
+    ))
+
+(use-package direx-k
+  :config
+  (define-key direx:direx-mode-map (kbd "K") 'direx-k)
+  :bind (("C-c o" . direx-project:jump-to-project-root-other-window)))
 
 (use-package isend-mode
   :bind (("C-c t" . isend-send)
@@ -344,6 +412,16 @@
     (add-hook 'isend-mode-hook 'isend-default-shell-setup)
     (add-hook 'isend-mode-hook 'isend-default-python-setup)
     (add-hook 'isend-mode-hook 'isend-default-ipython-setup)))
+
+(use-package project-explorer
+  :bind (("C-c [" . project-explorer-open)
+         ("C-c ]" . project-explorer-helm)))
+
+(use-package virtualenvwrapper
+  :config
+  (progn
+    (venv-initialize-interactive-shells)
+    (venv-initialize-eshell)))
 
 (use-package smart-mode-line
   :init (sml/setup)
@@ -381,11 +459,11 @@
 
 (define-minor-mode auto-pep8
   :init-value t
-  "Autopep8 ")
+  " Autopep8")
 
 (define-minor-mode auto-dtw
   :init-value t
-  "Autodwt ")
+  " Autodwt")
 
 (defun python-hooks ()
   (if auto-pep8
@@ -425,60 +503,83 @@
           (lambda ()
             (add-hook 'before-save-hook 'python-hooks)))
 
-
 (use-package ein
   :config
   (setq ein:use-auto-complete 1))
 
-(use-package zencoding-mode
+(use-package flx-ido
   :config
-  (add-hook 'sgml-mode-hook 'zencoding-mode)
+  (progn
+    (ido-mode 1)
+    (ido-everywhere 1)
+    (flx-ido-mode 1)
+    (setq ido-enable-flex-matching t)))
+
+(use-package emmet-mode
+  :config
+  (progn
+    (add-hook 'sgml-mode-hook 'emmet-mode)
+    (add-hook 'scss-mode-hook 'emmet-mode)
+    (add-hook 'css-mode-hook  'emmet-mode))
   :bind
-  ("M-TAB" . zencoding-expand-line))
+  ("M-TAB" . emmet-expand-line))
+
+(use-package visual-regexp
+  :bind (("C-c r" . vr/replace)
+         ("C-c q" . vr/query-replace)
+         ("C-c m" . vr/mc-mark)))
+
+(use-package discover-my-major
+  :bind (("C-h C-m" . discover-my-major)))
 
 (use-package crontab-mode)
 
-;;;; Fonts faces
+;; helm-swoop
+(use-package helm-swoop
+  :bind (("M-i" . helm-swoop)
+         ("M-I" . helm-swoop-back-to-last-point)
+         ("C-c M-i" . helm-multi-swoop)
+         ("C-x M-i" . helm-multi-swoop-all))
+  :config
+  (progn
+    (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
+    (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop)
+    (setq helm-multi-swoop-edit-save t)
+    (setq helm-swoop-split-with-multiple-windows nil)
+    (setq helm-swoop-split-direction 'split-window-vertically)
+    (setq helm-swoop-speed-or-color nil)))
 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ein:cell-input-area ((t (:background "#042028"))))
- '(ein:cell-input-prompt ((t (:inherit header-line :background "#002b35" :foreground "#859900" :inverse-video nil :weight bold))))
- '(ein:cell-output-prompt ((t (:inherit header-line :background "#002b35" :foreground "#dc322f" :inverse-video nil :weight bold))))
- '(erc-nick-default-face ((t (:foreground "#00afaf" :inverse-video nil :underline nil :slant normal :weight normal))) t)
- '(font-lock-comment-face ((t (:foreground "#6171c4" :inverse-video nil :underline nil :slant italic :weight normal))))
- '(font-lock-function-name-face ((t (:foreground "#2075c7" :inverse-video nil :underline nil :slant normal :weight bold))))
- '(font-lock-keyword-face ((t (:foreground "#cb4b16" :inverse-video nil :underline nil :slant normal :weight normal))))
- '(font-lock-type-face ((t (:foreground "#d33682" :inverse-video nil :underline nil :slant normal :weight normal))))
- '(isearch ((t (:foreground "#a33a37" :background "#f590ae"))))
- '(isearch-fail ((t (:foreground "#ffffff" :background "#f590ae"))))
- '(lazy-highlight ((t (:foreground "#465457" :background "#000000"))))
- '(magit-branch ((t (:foreground "#fbde2d"))))
- '(magit-item-highlight ((t (:inherit highlight :background "#042028"))))
- '(magit-log-head-label-local ((t (:foreground "#3387cc"))))
- '(magit-log-head-label-remote ((t (:foreground "#65b042"))))
- '(magit-log-sha1 ((t (:foreground "#cf6a4c"))))
- '(magit-section-title ((t (:foreground "#adc6ee"))))
- '(markdown-header-face-1 ((t (:inherit markdown-header-face :height 210))))
- '(markdown-header-face-2 ((t (:inherit markdown-header-face :height 190))))
- '(markdown-header-face-3 ((t (:inherit markdown-header-face :height 170))))
- '(markdown-header-face-4 ((t (:inherit markdown-header-face :height 150))))
- '(markdown-header-face-5 ((t (:inherit markdown-header-face :slant italic :weight bold))))
- '(markdown-header-face-6 ((t (:inherit markdown-header-face :slant italic :weight normal))))
- '(markdown-math-face ((t (:inherit font-lock-string-face :foreground "#cb4b16" :slant italic))))
- '(minibuffer-prompt ((t (:foreground "#729fcf" :bold t))))
- '(mode-line ((t (:background "light green" :foreground "grey22" :inverse-video t :box nil :underline nil :slant normal :weight normal))))
- '(mode-line-filename-face ((t (:background "gray100" :foreground "orchid1" :weight bold :family "Wawati SC"))))
- '(mode-line-folder-face ((t (:inherit mode-line :foreground "gray70" :family "Wawati SC"))))
- '(mode-line-inactive ((t (:inherit mode-line :background "#404045" :foreground "gray80" :inverse-video nil :box nil :underline nil :slant normal :weight normal))))
- '(mumamo-background-chunk-major ((t (:background "#002b36"))))
- '(py-variable-name-face ((t (:inherit default :foreground "#268bd2"))))
- '(show-paren-match ((t (:foreground "#000000" :background "#F0F6FC" :weight bold))) t)
- '(show-paren-mismatch ((t (:foreground "#960050" :background "#1E0010" :weight bold))) t)
- '(web-mode-html-tag-bracket-face ((t (:foreground "magenta")))))
+;; helm-css-scss
+(use-package helm-css-scss
+  :config
+  (progn
+    (setq helm-css-scss-insert-close-comment-depth 4)
+    (setq helm-css-scss-split-with-multiple-windows nil)
+    (setq helm-css-scss-split-direction 'split-window-vertically)
+    (--each '(css-mode-hook
+              scss-mode-hook
+              less-css-mode-hook)
+      (add-hook it (lambda ()
+                     (local-set-key (kbd "s-i") 'helm-css-scss)
+                     (local-set-key (kbd "s-I") 'helm-css-scss-back-to-last-point))))
+    (define-key isearch-mode-map (kbd "s-i") 'helm-css-scss-from-isearch)
+    (define-key helm-css-scss-map (kbd "s-i") 'helm-css-scss-multi-from-helm-css-scss)))
+
+;; helm-descbinds
+(use-package helm-descbinds
+  :init (helm-descbinds-mode))
+
+;; helm-ipython
+(use-package helm-ipython)
+
+;; helm-open-github
+;(use-package helm-open-github
+;  :config
+;  (progn
+;    (global-set-key (kbd "C-c o f") 'helm-open-github-from-file)
+;    (global-set-key (kbd "C-c o c") 'helm-open-github-from-commit)
+;    (global-set-key (kbd "C-c o i") 'helm-open-github-from-issues)
+;    (global-set-key (kbd "C-c o p") 'helm-open-github-from-pull-requests)))
 
 ;;;; Bindings
 
@@ -522,5 +623,7 @@
 ;; Align Text use "="
 (bind-key "C-c k" 'align-to-equals)
 
+;; Load you local settings
+(load-local "local-settings")
 (provide 'init)
 ;;; init.el ends here

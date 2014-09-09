@@ -49,11 +49,32 @@ C-x C-b         ibuffer
 C-x C-a         ag-project
 M <up/down>     drag-stuff
 C-c x           expand-region
-M-TAB           zencoding-expand-line
-C-c <up>          smart-up
-C-c <down>        smart-down
-C-c <left>        smart-backward
-C-c <right>       smart-forward
+M-TAB           emmet-expand-line
+C-x C-j         direx:jump-to-directory
+C-c o           direx-project:jump-to-project-root-other-window
+C-x C-g         git-gutter:toggle
+C-x v =         git-gutter:popup-hunk
+C-x p           git-gutter:previous-hunk
+C-x n           git-gutter:next-hunk
+C-x v s         git-gutter:stage-hunk
+C-x v r         git-gutter:revert-hunk
+C-c [           project-explorer-open
+C-c ]           project-explorer-helm
+C-c r           vr/replace
+C-c q           vr/query-replace
+C-c m           vr/mc-mark
+C-h C-m         discover-my-major
+M-i             helm-swoop
+M-I             helm-swoop-back-to-last-point
+C-c M-i         helm-multi-swoop
+C-x M-i         helm-multi-swoop-all
+s-i             helm-css-scss
+s-I             helm-css-scss-back-to-last-point
+
+C-c <up>        smart-up
+C-c <down>      smart-down
+C-c <left>      smart-backward
+C-c <right>     smart-forward
 C-x C-r         open-recentf-file
 C-c t           isend-send
 C-c y           isend-associate
@@ -78,12 +99,28 @@ C-c c           hs-toggle-hiding
 \n
 Web mode:
 
+C-c C-n         between opening and closing HTML tags or between control bloqcks
 C-c C-f         code folding
 C-c C-m         selection and expansion
 C-c C-i         indent entire buffer
 C-c C-d d       show tag mismatch
 C-c C-d n       normalize
 C-c C-e i       select element content
+
+Key Chord:
+
+;b              ido-switch-buffer
+;r              recentf-ido-find-file
+;f              ido-find-file
+;g              magit-status
+;j              ace-jump-word-mode
+;l              ace-jump-line-mode
+;k              ace-jump-char-mode
+;u              undo-tree-visualize
+;,              fill-paragraph
+;o              magit-in-perspective
+;d              dired-jump-other-window
+;a              ack-and-a-half
 ")
 
 (defcustom help-scroll-amount nil
@@ -144,3 +181,6 @@ text to be displayed in BUFNAME."
   "Scroll other window downward."
   (interactive)
   (help-window-base 'scroll-down))
+
+(provide 'helper)
+;;; helper.el ends here
