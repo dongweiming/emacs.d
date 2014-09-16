@@ -24,6 +24,12 @@
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) 1)))
 
+;; Show FIXME/TODO/BUG keywords
+(defun show-prog-keywords ()
+  "highlight additional keywords."
+  (font-lock-add-keywords nil '(("\\<\\(FIXME\\|TODO\\|BUG\\):" 1 font-lock-warning-face t)))
+  (font-lock-add-keywords nil '(("\\<\\(DONE\\):" 1 font-lock-string-face t))))
+
 (defun hold-line-scroll-up ()
   "Scroll the page with the cursor in the same line"
   (interactive)
@@ -117,40 +123,6 @@
   (interactive "F")
   (set-buffer (find-file (concat "/sudo::" file))))
 
-(defun increase-window-height (&optional arg)
-  "Make the window taller by one line. Useful when bound to a repeatable key combination."
-  (interactive "p")
-  (enlarge-window arg))
-
-(defun decrease-window-height (&optional arg)
-  "Make the window shorter by one line. Useful when bound to a repeatable key combination."
-  (interactive "p")
-  (enlarge-window (- 0 arg)))
-
-(defun decrease-window-width (&optional arg)
-  "Make the window narrower by one column. Useful when bound to a repeatable key combination."
-  (interactive "p")
-  (enlarge-window (- 0 arg) t))
-
-(defun increase-window-width (&optional arg)
-  "Make the window wider by one column. Useful when bound to a repeatable key combination."
-  (interactive "p")
-  (enlarge-window arg t))
-
-(defun swith-mode (mode-name mode fn)
-  (interactive)
-  (message (format "set [%s] to %s" mode-name (if mode "off" "on")))
-  (setq mode nil)
-  (if mode
-      (remove-hook 'before-save-hook fn)
-    (add-hook 'before-save-hook fn)))
-
-(defmacro install-switch-mode (mode-name mode fn)
-  `(defun ,(intern (format "switch-%s" mode-name)) ()
-     ,(format "Can switch some feature on/off")
-     (interactive)
-     (swith-mode ,mode-name ,mode ,fn)))
-
 (defun shorten-directory (dir max-length)
   "Show up to `max-length' characters of a directory name `dir'."
   (let ((path (reverse (split-string (abbreviate-file-name dir) "/")))
@@ -202,5 +174,20 @@ PROMPT sets the `read-string prompt."
 (install-search-engine "google"     "http://www.google.com/search?q="              "Google: ")
 (install-search-engine "github"     "https://github.com/search?q="                 "Search GitHub: ")
 (install-search-engine "code"       "http://code.dapps.douban.com/hub/search?q="   "Search Code: ")
+
+(defun delete-trailing-blank-lines ()
+  "Deletes all blank lines at the end of the file."
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (widen)
+      (goto-char (point-max))
+      (delete-blank-lines))))
+
+(defmacro after-load (feature &rest body)
+  "After FEATURE is loaded, evaluate BODY."
+  (declare (indent defun))
+  `(eval-after-load ,feature
+     '(progn ,@body)))
 
 ;;; functions.el ends here

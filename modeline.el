@@ -44,10 +44,8 @@
   "vc-face"
   :group 'modeline)
 
-;; vc-mode
 (eval-after-load "vc-hooks"
   '(defadvice vc-mode-line (after modeline/after-vc-mode-line-advice () activate)
-     "Color `vc-mode'."
      (when (stringp vc-mode)
        (let ((noback (replace-regexp-in-string (format "^ %s" (vc-backend buffer-file-name)) " " vc-mode)))
          (setq vc-mode
@@ -105,7 +103,6 @@
                           (powerline-raw (shorten-directory default-directory 30) 'mode-line-folder-face)
                           (powerline-raw "%b" 'mode-line-filename-face)
                           vc-mode))
-                        (format-mode-line '(vc-mode vc-mode))
                         (rhs
                          (list
                           (powerline-raw global-mode-string face1 'r)
@@ -117,7 +114,6 @@
                              (powerline-hud face2 face1)))))
                         (center
                          (list
-                          (powerline-raw " " face1)
                           (funcall separator-left face1 face2)
                           (when
                               (boundp 'erc-modified-channels-object)
@@ -127,8 +123,7 @@
                           (if (not (display-graphic-p))
                               (concat
                                (powerline-raw " :" face2)
-                               (powerline-simpler-minor-display (powerline-minor-modes face2 'l))
-                               (powerline-raw " " face2)))
+                               (powerline-simpler-minor-display (powerline-minor-modes face2 'l))))
                                (funcall separator-right face2 face1))))
                      (concat
                       (powerline-render lhs)

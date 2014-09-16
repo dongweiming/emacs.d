@@ -19,6 +19,7 @@
 
 ;; Indent with spaces instead of tabs
 (setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
 
 ;; Truncate lines
 (set-default 'truncate-lines t)
@@ -76,15 +77,11 @@
 ;; Always display error backtraces
 (setq debug-on-error t)
 
-;; According to matching brackets
-(show-paren-mode t)
-
-;; Paste with format
-(setq x-select-enable-clipboard t)
-(setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
-
-; ; Turn beep off
+;; Turn beep off
 (setq visible-bell nil)
+
+;; Warn only when opening files bigger than 100MB
+(setq large-file-warning-threshold 100000000)
 
 (provide 'misc)
 ;;; misc.el ends here

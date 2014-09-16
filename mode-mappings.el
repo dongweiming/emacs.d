@@ -1,20 +1,19 @@
+;;; package --- Summary
+
+;;; Code:
+
 ;; Emacs lisp
 (add-to-list 'auto-mode-alist '("Cask$" . emacs-lisp-mode))
 
 ;; Python
 (add-to-list 'auto-mode-alist '("\\.py$" . python-mode))
 
-;; Puppet
-(autoload 'puppet-mode "puppet-mode")
-(add-to-list 'auto-mode-alist '("\\.pp$" . puppet-mode))
-
 ;; SVG
 (add-to-list 'auto-mode-alist '("\\.svg$" . image-mode))
 
 ;; JavaScript
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-(add-to-list 'auto-mode-alist '("\\.json$" . javascript-mode))
-(add-to-list 'auto-mode-alist '("\\.jshintrc$" . javascript-mode))
+(add-to-list 'auto-mode-alist '("\\.json$" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.jshintrc$" . js2-mode))
 (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode))
 
 ;; Snippets
@@ -24,7 +23,10 @@
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 
+;; plim-mode
+;(add-to-list 'auto-mode-alist '("\\.html\\'" . plim-mode)
+
 ;; html-mode
-(add-to-list 'auto-mode-alist '("\\.html$" . html-mode))
+(add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
 
 (provide 'mode-mappings)

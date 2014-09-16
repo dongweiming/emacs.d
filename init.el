@@ -1,11 +1,9 @@
-;;; package --- Summary
+;; package --- Summary
 
 ;;; Commentary:
 
 ;;; Code:
 
-(setq lexical-binding t)
-(eval 'lexical-binding)
 (unless (= emacs-major-version 24)
   (error "Emacs version 24 is required"))
 
@@ -24,10 +22,12 @@
 
 ; helm
 (require 'helm-config)
+(require 'imenu-anywhere)
 (setq enable-recursive-minibuffers t)
 (bind-key "C-c h" 'helm-mini)
 (bind-key "M-l" 'helm-locate)
 (bind-key "M-t" 'helm-top)
+(bind-key "C-." 'helm-imenu-anywhere)
 (bind-key "C-x C-f" 'helm-find-files)
 ;(bind-key "M-x" 'helm-M-x)
 (bind-key "M-l" 'helm-eshell-history)
@@ -89,16 +89,34 @@
 (load-local "functions")
 (load-local "modeline")
 (load-local "hs-minor-mode-conf")
+(load-local "smartparens-config")
 ;; key-chord
-(load-local "keys")
+;(load-local "keys")
 ;; Map files to modes
 (load-local "mode-mappings")
 (when (eq system-type 'darwin)
   (load-local "osx"))
 
+;;;; Common
+
+(add-hook 'prog-mode-hook 'show-prog-keywords)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+(defun my-hook ()
+  (idle-highlight-mode t))
+
 ;;;; Packages
 
 (use-package ht)
+
+;; hippie-expand
+(global-set-key (kbd "M-/") 'hippie-expand)
+(setq hippie-expand-try-functions-list
+      '(try-complete-file-name-partially
+        try-complete-file-name
+        try-expand-dabbrev
+        try-expand-dabbrev-all-buffers
+        try-expand-dabbrev-from-kill))
 
 (use-package powerline
   :config
@@ -106,7 +124,7 @@
 
 (global-hl-line-mode +1)
 (use-package hl-line
-  :config (set-face-background 'hl-line "#073642"))
+  :config (set-face-background 'hl-line "#111"))
 
 (use-package direx
   :bind (("C-x C-j" . direx:jump-to-directory)))
@@ -131,6 +149,37 @@
                                (setq sql-product 'mysql)
                                (sql-highlight-mysql-keywords)))))
 
+(use-package auto-complete)
+(use-package auto-complete-config
+  :config
+  (progn
+    (ac-config-default)
+    (ac-flyspell-workaround)
+    (global-auto-complete-mode t)
+    (setq ac-auto-show-menu t)
+    (setq ac-dwim t)
+    (setq ac-use-menu-map t)
+    (setq ac-quick-help-delay 1)
+    (setq ac-quick-help-height 60)
+    (set-default 'ac-sources
+                 '(ac-source-dictionary
+                   ac-source-words-in-buffer
+                   ac-source-words-in-same-mode-buffers
+                   ac-source-words-in-all-buffer))
+    (dolist (mode '(magit-log-edit-mode log-edit-mode text-mode haml-mode css-mode
+                                        sass-mode yaml-mode csv-mode espresso-mode
+                                        scss-mode html-mode nxml-mode web-mode
+                                        lisp-mode js2-mode markdown-mode))
+      (add-to-list 'ac-modes mode))
+    (add-to-list 'ac-dictionary-directories tmp-dir)
+    (setq ac-comphist-file (expand-file-name ".ac-comphist.dat" tmp-dir))
+    ;;Key triggers
+    (ac-set-trigger-key "TAB")
+    (define-key ac-completing-map (kbd "C-M-n") 'ac-next)
+    (define-key ac-completing-map (kbd "C-M-p") 'ac-previous)
+    (define-key ac-completing-map "\t" 'ac-complete)
+    (define-key ac-completing-map "\r" nil)))
+
 (use-package projectile
   :config
   (progn
@@ -138,12 +187,6 @@
     (setq projectile-enable-caching t)
     (setq projectile-file-exists-local-cache-expire (* 5 60))
     (setq projectile-require-project-root nil)))
-
-(use-package fiplr
-  :config
-  (progn
-    (setq fiplr-ignored-globs '((directories (".git" ".svn"))
-                                (files ("*.jpg" "*.png" "*.zip" "*~"))))))
 
 (use-package ido
   :init (ido-mode 1)
@@ -157,7 +200,30 @@
     (setq ido-max-prospects 10)
     (setq ido-save-directory-list-file (expand-file-name "ido-saved-places" tmp-dir))
     (setq ido-file-extensions-order '(".py" ".el" ".coffee" ".js" ".css" ".scss"))
+    (add-hook 'ido-setup-hook (lambda ()
+                                (define-key ido-completion-map [up] 'previous-history-element)))
     (add-to-list 'ido-ignore-files "\\.DS_Store")))
+
+(use-package flx-ido
+  :config
+  (flx-ido-mode 1))
+
+(use-package ido-ubiquitous
+  :config
+  (ido-ubiquitous-mode t))
+
+(use-package diff-hl
+  :if window-system
+  :config
+  (progn
+    (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
+    (add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode)))
+
+(use-package json-reformat
+  :bind (("C-x i" . json-reformat-region)))
+
+(use-package browse-kill-ring
+  :bind (("M-y" . browse-kill-ring)))
 
 (use-package ace-jump-mode
   :bind (("C-c SPC" . ace-jump-word-mode)
@@ -171,6 +237,7 @@
          ("C-c ;" . mc/edit-lines)
          ("C-c n" . mc/mark-previous-like-this)))
 
+;; Git
 (use-package magit
   :init
   (progn
@@ -185,7 +252,25 @@
     (setq magit-unstage-all-confirm nil)
     (setq magit-restore-window-configuration t)
     (add-hook 'magit-mode-hook 'rinari-launch))
-  :bind ("C-x g" . magit-status))
+  :bind (("M-g s" . magit-status)
+         ("M-g l" . magit-log)
+         ("M-g f" . magit-pull)
+         ("M-g p" . magit-push)))
+
+(use-package git-blame)
+(use-package git-commit-mode)
+(use-package git-rebase-mode)
+(use-package gitignore-mode)
+(use-package gitconfig-mode)
+
+(setq-default
+ magit-save-some-buffers nil
+ magit-process-popup-time 10
+ magit-diff-refine-hunk t
+ magit-completing-read-function 'magit-ido-completing-read)
+(add-hook 'git-commit-mode-hook 'goto-address-mode)
+
+;; End
 
 (use-package git-gutter
   :config
@@ -246,19 +331,33 @@
   :interpreter ("node" . js2-mode)
   :config
   (progn
-    (setq js2-use-font-lock-faces t)
-    (add-hook 'js-mode-hook 'js2-minor-mode)
-    (add-hook 'js2-mode-hook (lambda ()
-                               (ac-js2-mode)
-                               (setq js2-basic-offset 4)))))
+    (setq js2-use-font-lock-faces t
+          mode-name "JS2")
+    (setq-default js2-bounce-indent-p nil
+                  js-indent-level 4
+                  js2-basic-indent 2
+                  js2-basic-offset 4
+                  js2-auto-indent-p t
+                  js2-cleanup-whitespace t
+                  js2-enter-indents-newline t
+                  js2-global-externs "jQuery $"
+                  js2-indent-on-enter-key t
+                  js2-mode-indent-ignore-first-tab t
+                  js2-global-externs '("module" "require" "buster"
+                                       "sinon" "assert" "refute"
+                                       "setTimeout" "clearTimeout"
+                                       "setInterval" "clearInterval"
+                                       "location" "__dirname"
+                                       "console" "JSON"))
 
-(use-package js3-mode
+    (add-hook 'js2-mode-hook 'ac-js2-mode)
+    (add-hook 'js-mode-hook 'js2-minor-mode)
+    (js2-imenu-extras-setup)))
+
+(use-package js2-refactor
   :config
   (progn
-    (add-hook 'js2-mode-hook (lambda ()
-                               (js3-auto-indent-p t)
-                               (js3-enter-indents-newline t)
-                               (js3-indent-on-enter-key t)))))
+    (js2r-add-keybindings-with-prefix "M-m")))
 
 (use-package coffee-mode
   :config
@@ -294,7 +393,7 @@
     (setq scss-compile-at-save nil)))
 
 (use-package eshell
-  :bind ("M-e" . eshell)
+  :bind ("M-1" . eshell)
   :init
   (add-hook 'eshell-first-time-mode-hook
             (lambda ()
@@ -306,21 +405,63 @@
 
 (use-package plim-mode
   :init (progn
-          (add-to-list 'auto-mode-alist '("\\.plim\\'" . plim-mode))
-          (add-to-list 'auto-mode-alist '("\\.html\\'" . plim-mode))))
+          (add-to-list 'auto-mode-alist '("\\.plim\\'" . plim-mode))))
 
 (use-package web-mode
-  :config (progn
-            (add-hook 'web-mode-hook
-                      (lambda ()
-                        (setq web-mode-css-indent-offset 4)
-                        (setq web-mode-markup-indent-offset 4)
-                        (setq web-mode-code-indent-offset 4)
-                        (setq web-mode-script-padding 4)))))
+  :config
+  (progn
+    (add-hook 'web-mode-hook
+              (lambda ()
+                (setq web-mode-css-indent-offset 4)
+                (setq web-mode-markup-indent-offset 4)
+                (setq web-mode-code-indent-offset 4)
+                (setq web-mode-script-padding 4)))))
 
 (use-package ibuffer
   :config (setq ibuffer-expert t)
   :bind ("C-x C-b" . ibuffer))
+
+;; From purcell's emacs.d
+;; https://github.com/purcell/emacs.d/blob/master/lisp/init-ibuffer.el
+(defun ibuffer-set-up-preferred-filters ()
+  (ibuffer-vc-set-filter-groups-by-vc-root)
+  (unless (eq ibuffer-sorting-mode 'filename/process)
+    (ibuffer-do-sort-by-filename/process)))
+
+(add-hook 'ibuffer-hook 'ibuffer-set-up-preferred-filters)
+
+(define-ibuffer-column size-h
+  (:name "Size" :inline t)
+  (cond
+   ((> (buffer-size) 1000000) (format "%7.1fM" (/ (buffer-size) 1000000.0)))
+   ((> (buffer-size) 1000) (format "%7.1fk" (/ (buffer-size) 1000.0)))
+   (t (format "%8d" (buffer-size)))))
+
+(use-package ibuffer-vc
+  :config
+  (progn
+    ;; Modify the default ibuffer-formats (toggle with `)
+    (setq ibuffer-formats
+          '((mark modified read-only vc-status-mini " "
+                  (name 18 18 :left :elide)
+                  " "
+                  (size-h 9 -1 :right)
+                  " "
+                  (mode 16 16 :left :elide)
+                  " "
+                  filename-and-process)
+            (mark modified read-only vc-status-mini " "
+                  (name 18 18 :left :elide)
+                  " "
+                  (size-h 9 -1 :right)
+                  " "
+                  (mode 16 16 :left :elide)
+                  " "
+                  (vc-status 16 16 :left)
+                  " "
+                  filename-and-process)))
+    (setq ibuffer-filter-group-name-face 'font-lock-doc-face)))
+;; End
 
 (use-package ag
   :config
@@ -333,17 +474,22 @@
   :init (global-undo-tree-mode 1)
   :config
   (progn
-    (diminish 'undo-tree-mode)))
+    (setq undo-tree-visualizer-diff t)
+    (setq undo-tree-history-directory-alist (expand-file-name ".undo" tmp-dir))
+    (setq undo-tree-visualizer-timestamps t)))
+
+(use-package idle-highlight-mode
+  :init (idle-highlight-mode))
 
 (use-package rainbow-mode
   :config
-  (--each '(html-mode-hook
-            web-mode-hook
+  (--each '(web-mode-hook
             emacs-lisp-mode-hook
             css-mode-hook
             scss-mode-hook
             sass-mode-hook)
-    (add-hook it 'rainbow-mode)))
+    (add-hook it 'rainbow-mode)
+    (add-hook it 'my-hook)))
 
 (use-package drag-stuff
   :config
@@ -447,18 +593,10 @@
   :init-value t
   " Autopep8")
 
-(define-minor-mode auto-dtw
-  :init-value t
-  " Autodwt")
-
 (defun python-hooks ()
   (if auto-pep8
       (add-hook 'before-save-hook 'py-autopep8-before-save)
     (remove-hook 'before-save-hook 'py-autopep8-before-save))
-
-  (if auto-dtw
-      (add-hook 'before-save-hook 'delete-trailing-whitespace)
-    (remove-hook 'before-save-hook 'delete-trailing-whitespace))
 
   (flycheck-list-errors-only-when-errors))
 
@@ -477,6 +615,7 @@
      python-shell-completion-string-code
      "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
     (add-hook 'python-mode-hook 'jedi:setup)
+    (add-hook 'python-mode-hook 'my-hook)
     (setq jedi:complete-on-dot t)
     (setq py-electric-colon-active t)
     (setenv "LC_CTYPE" "UTF-8"))
@@ -488,18 +627,6 @@
 (add-hook 'python-mode-hook
           (lambda ()
             (add-hook 'before-save-hook 'python-hooks)))
-
-(use-package ein
-  :config
-  (setq ein:use-auto-complete 1))
-
-(use-package flx-ido
-  :config
-  (progn
-    (ido-mode 1)
-    (ido-everywhere 1)
-    (flx-ido-mode 1)
-    (setq ido-enable-flex-matching t)))
 
 (use-package emmet-mode
   :config
@@ -567,20 +694,18 @@
 ;    (global-set-key (kbd "C-c o i") 'helm-open-github-from-issues)
 ;    (global-set-key (kbd "C-c o p") 'helm-open-github-from-pull-requests)))
 
+(use-package ido-hacks
+  :init (ido-hacks-mode))
+
 ;;;; Bindings
 
 (bind-key "C-x h" 'my-help)
 
-(bind-key "RET  " 'newline-and-indent)
 (bind-key "C-z  " 'undo)
 (bind-key "C-c b" 'switch-to-previous-buffer)
-(bind-key "M-p  " 'hold-line-scroll-up)
-(bind-key "M-n  " 'hold-line-scroll-down)
+(bind-key "M-p  " 'hold-line-scroll-down)
+(bind-key "M-n  " 'hold-line-scroll-up)
 (bind-key "C-c v" 'py-taglist)
-(bind-key "C-c >  " 'increase-window-height)
-(bind-key "C-c <  " 'decrease-window-height)
-(bind-key "C-c ,  " 'decrease-window-width)
-(bind-key "C-c .  " 'increase-window-width)
 
 ;; Toggle Fullscreen
 (bind-key "C-c f" 'toggle-fullscreen)
@@ -605,11 +730,12 @@
 
 ;; automatically add the comment.
 (bind-key "C-c j" 'comment-dwim)
-
 ;; Align Text use "="
 (bind-key "C-c k" 'align-to-equals)
 
+
 ;; Load you local settings
 (load-local "local-settings")
-(provide 'init)
+
+;(provide 'init)
 ;;; init.el ends here

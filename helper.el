@@ -46,6 +46,7 @@ M-e             eshell
 C-c C-p         run-ipython
 C-x f           fiplr-find-file
 C-x C-b         ibuffer
+C-x k           ido-kill-buffer
 C-x C-a         ag-project
 M <up/down>     drag-stuff
 C-c x           expand-region
@@ -64,6 +65,7 @@ C-c r           vr/replace
 C-c q           vr/query-replace
 C-c m           vr/mc-mark
 C-h C-m         discover-my-major
+C-.             helm-imenu-anywhere
 M-i             helm-swoop
 M-I             helm-swoop-back-to-last-point
 C-c M-i         helm-multi-swoop
@@ -82,8 +84,8 @@ M-i             change-inner
 M-o             change-outer
 C-z             undo
 C-c b           switch-to-previous-buffer
-M-p             hold-line-scroll-up
-M-n             hold-line-scroll-down
+M-p             hold-line-scroll-down
+M-n             hold-line-scroll-up
 C-c v           func/class list
 C-c f           toggle-fullscreen ; Only for GUI
 C-c G           search github
@@ -96,6 +98,9 @@ C-c W           hs-show-block
 C-c s           hs-hide-all
 C-c S           hs-show-all
 C-c c           hs-toggle-hiding
+M-/             hippie-expand
+M-.             jump-to-definition(python/js)
+M-,             pop-tag-mark
 \n
 Web mode:
 

@@ -61,6 +61,7 @@
    '(cursor ((t (:foreground "#1c1c1c" :background "#808080"))))
    '(fixed-pitch ((t (:family "Monospace"))))
    '(variable-pitch ((t (:family "Sans Serif"))))
+   `(sp-show-pair-match-face ((t (:foreground "#191919" :background ,xiaoming/purple))))
    '(escape-glyph ((((background dark)) (:foreground "cyan")) (((type pc)) (:foreground "magenta")) (t (:foreground "brown"))))
    '(minibuffer-prompt ((t (:weight bold :slant normal :underline nil :inverse-video nil :foreground "#729fcf"))))
    '(highlight ((t (:background "#262626"))))

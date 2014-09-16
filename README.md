@@ -92,3 +92,4 @@ Keybinding         | Description
 <kbd>C-c S</kbd> |hs-show-all
 <kbd>C-c c</kbd> |hs-toggle-hiding
 <kbd>C-z</kbd> |undo
+<kbd>M-/</kbd> |hippie-expand
