@@ -647,6 +647,16 @@
 
 (use-package crontab-mode)
 
+(use-package aggressive-indent
+  :config
+  (progn
+    (global-aggressive-indent-mode 1)
+    (add-to-list 'aggressive-indent-excluded-modes 'html-mode)))
+
+(use-package indent-guide
+  :config
+  (indent-guide-global-mode))
+
 ;; helm-swoop
 (use-package helm-swoop
   :bind (("M-i" . helm-swoop)
