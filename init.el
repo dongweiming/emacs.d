@@ -412,8 +412,13 @@
   (progn
     (add-hook 'web-mode-hook
               (lambda ()
+                (web-mode-set-engine "mako")
+                (setq web-mode-disable-auto-pairing t)
                 (setq web-mode-css-indent-offset 4)
+                (setq web-mode-indent-style 4)
                 (setq web-mode-markup-indent-offset 4)
+                (setq web-mode-block-padding 4)
+                (setq web-mode-style-padding 4)
                 (setq web-mode-code-indent-offset 4)
                 (setq web-mode-script-padding 4)))))
 
