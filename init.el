@@ -42,7 +42,7 @@
 (setq default-directory (f-full (getenv "HOME")))
 (exec-path-from-shell-initialize)
 
-; sublimity
+                                        ; sublimity
 (if (display-graphic-p)
     (progn
       (require 'sublimity)
@@ -51,13 +51,13 @@
       (setq sublimity-scroll-weight 10
             sublimity-scroll-drift-length 5)))
 
-; highlight URLs in comments/strings
+                                        ; highlight URLs in comments/strings
 (add-hook 'find-file-hooks 'goto-address-prog-mode)
 
 (defun load-local (filename)
   (let ((file (s-concat (f-expand filename user-emacs-directory) ".el")))
-  (if (f-exists? file)
-    (load-file file))))
+    (if (f-exists? file)
+        (load-file file))))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -74,8 +74,9 @@
  '(cursor-color nil)
  '(foreground-color nil))
 
-(load-theme 'xiaoming t)
-;(load-theme 'solarized-dark :no-confirm)
+(add-to-list 'custom-theme-load-path (expand-file-name "themes" init-dir))
+(load-theme 'noctilux t)
+                                        ;(load-theme 'solarized-dark :no-confirm)
 
 (add-hook 'emacs-startup-hook
           (lambda ()

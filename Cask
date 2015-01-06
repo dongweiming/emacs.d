@@ -25,6 +25,7 @@
 (depends-on "js2-mode")
 (depends-on "web-mode")
 (depends-on "git-blame")
+(depends-on "helm-misc")
 (depends-on "ido-hacks")
 (depends-on "key-chord")
 (depends-on "nyan-mode")
