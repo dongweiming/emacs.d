@@ -99,7 +99,7 @@ Note that `--in-place' is used by default."
       (erase-buffer))
     (write-region nil nil tmpfile)
     (if (zerop (apply 'call-process "autopep8" nil errbuf nil
-                      (append `("--in-place" ,tmpfile) py-autopep8-options)))
+                      (append `("--in-place" "--ignore=E24,E309",tmpfile) py-autopep8-options)))
         (if (zerop (call-process-region (point-min) (point-max) "diff" nil patchbuf nil "-n" "-" tmpfile))
             (progn
               (kill-buffer errbuf)
