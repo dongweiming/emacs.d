@@ -42,16 +42,7 @@
 (setq default-directory (f-full (getenv "HOME")))
 (exec-path-from-shell-initialize)
 
-                                        ; sublimity
-(if (display-graphic-p)
-    (progn
-      (require 'sublimity)
-      (require 'sublimity-map)
-      (sublimity-mode 1)
-      (setq sublimity-scroll-weight 10
-            sublimity-scroll-drift-length 5)))
-
-                                        ; highlight URLs in comments/strings
+; highlight URLs in comments/strings
 (add-hook 'find-file-hooks 'goto-address-prog-mode)
 
 (defun load-local (filename)
@@ -76,7 +67,6 @@
 
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" init-dir))
 (load-theme 'noctilux t)
-                                        ;(load-theme 'solarized-dark :no-confirm)
 
 (add-hook 'emacs-startup-hook
           (lambda ()
@@ -659,10 +649,6 @@
     (global-aggressive-indent-mode 1)
     (add-to-list 'aggressive-indent-excluded-modes 'html-mode)))
 
-(use-package indent-guide
-  :config
-  (indent-guide-global-mode))
-
 ;; helm-swoop
 (use-package helm-swoop
   :bind (("M-i" . helm-swoop)
@@ -726,8 +712,8 @@
 ;; Toggle Fullscreen
 (bind-key "C-c f" 'toggle-fullscreen)
 
-(if (display-graphic-p)
-    (toggle-fullscreen))
+;(if (display-graphic-p)
+;  (toggle-fullscreen))
 
 ;; Reload File
 (bind-key  [f5] 'revert-buffer)

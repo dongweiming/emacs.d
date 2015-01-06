@@ -121,10 +121,7 @@
                           (powerline-major-mode 'mode-line-folder-face 'l)
                           (powerline-process face2)
                           (if (not (display-graphic-p))
-                              (concat
-                               (powerline-raw " :" face2)
-                               (powerline-simpler-minor-display (powerline-minor-modes face2 'l))))
-                               (funcall separator-right face2 face1))))
+                               (funcall separator-right face2 face1)))))
                      (concat
                       (powerline-render lhs)
                       (if (not (display-graphic-p))
