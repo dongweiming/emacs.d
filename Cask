@@ -51,6 +51,7 @@
 (depends-on "helm-ipython")
 (depends-on "js2-refactor")
 (depends-on "rainbow-mode")
+(depends-on "auto-complete")
 (depends-on "ace-jump-mode")
 (depends-on "expand-region")
 (depends-on "helm-css-scss")

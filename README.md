@@ -10,7 +10,7 @@ Installation
 curl -fsSkL https://raw.github.com/cask/cask/master/go | python
 git clone https://github.com/dongweiming/emacs.d .emacs.d
 cd .emacs.d
-cask
+cask install
 sudo pip install epc jedi pep8 autopep8 flake8
 # or use virtualenv
 virtualenv venv
