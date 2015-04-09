@@ -517,14 +517,6 @@
 (use-package rainbow-delimiters
   :config (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
-(use-package recentf
-  :bind (("C-x C-r" . recentf-ido-find-file))
-  :config
-  (progn
-    (setq recentf-save-file (expand-file-name ".recentf" tmp-dir)
-      recentf-max-saved-items 250)
-    (recentf-mode 1)))
-
 ;; Save minibuffer history.
 (use-package savehist
   :config
@@ -695,9 +687,6 @@
 ;    (global-set-key (kbd "C-c o c") 'helm-open-github-from-commit)
 ;    (global-set-key (kbd "C-c o i") 'helm-open-github-from-issues)
 ;    (global-set-key (kbd "C-c o p") 'helm-open-github-from-pull-requests)))
-
-(use-package ido-hacks
-  :init (ido-hacks-mode))
 
 ;;;; Bindings
 
