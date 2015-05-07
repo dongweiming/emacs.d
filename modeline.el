@@ -87,13 +87,13 @@
                                   (cdr powerline-default-separator-dir))))
                         (lhs
                          (list
-                          ; Position, including warning for 80 columns
+                                        ; Position, including warning for 80 columns
                           (powerline-raw "%4l:" 'mode-line-position-face)
                           (if (>= (current-column) 80)
-                               (powerline-raw "%3c" 'mode-line-80col-face)
+                              (powerline-raw "%3c" 'mode-line-80col-face)
                             (powerline-raw "%3c" 'mode-line-position-face))
                           (powerline-raw " ")
-                          ; read-only or modified status
+                                        ; read-only or modified status
                           (cond (buffer-read-only
                                  (powerline-raw " RO " 'mode-line-read-only-face))
                                 ((buffer-modified-p)
@@ -121,18 +121,18 @@
                           (powerline-major-mode 'mode-line-folder-face 'l)
                           (powerline-process face2)
                           (if (not (display-graphic-p))
-                               (funcall separator-right face2 face1)))))
+                              (funcall separator-right face2 face1)))))
                      (concat
                       (powerline-render lhs)
                       (if (not (display-graphic-p))
-                        (concat
-                         (powerline-fill-center face1
-                                                (/
-                                                 (powerline-width center)
-                                                 2.0))
-                         (powerline-render center)
-                         (powerline-fill face1
-                                         (powerline-width rhs)))
+                          (concat
+                           (powerline-fill-center face1
+                                                  (/
+                                                   (powerline-width center)
+                                                   2.0))
+                           (powerline-render center)
+                           (powerline-fill face1
+                                           (powerline-width rhs)))
                         (powerline-render center))
                       (powerline-render rhs)))))))
 

@@ -22,6 +22,7 @@
 
 ; helm
 (require 'helm-config)
+(helm-mode 1)
 (require 'imenu-anywhere)
 (setq enable-recursive-minibuffers t)
 (bind-key "C-c h" 'helm-mini)
@@ -29,7 +30,7 @@
 (bind-key "M-t" 'helm-top)
 (bind-key "C-." 'helm-imenu-anywhere)
 (bind-key "C-x C-f" 'helm-find-files)
-;(bind-key "M-x" 'helm-M-x)
+(bind-key "M-x" 'helm-M-x)
 (bind-key "M-l" 'helm-eshell-history)
 
 ; eshell
@@ -42,7 +43,7 @@
 (setq default-directory (f-full (getenv "HOME")))
 (exec-path-from-shell-initialize)
 
-; highlight URLs in comments/strings
+;; highlight URLs in comments/strings
 (add-hook 'find-file-hooks 'goto-address-prog-mode)
 
 (defun load-local (filename)
@@ -81,8 +82,7 @@
 (load-local "modeline")
 (load-local "hs-minor-mode-conf")
 (load-local "smartparens-config")
-;; key-chord
-;(load-local "keys")
+
 ;; Map files to modes
 (load-local "mode-mappings")
 (when (eq system-type 'darwin)
@@ -92,9 +92,6 @@
 
 (add-hook 'prog-mode-hook 'show-prog-keywords)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-(defun my-hook ()
-  (idle-highlight-mode t))
 
 ;;;; Packages
 
@@ -315,7 +312,7 @@
 (use-package css-mode
   :config
   (progn
-    (setq css-indent-offset 4)))
+    (setq css-indent-offset 2)))
 
 (use-package js2-mode
   :mode (("\\.js$" . js2-mode))
@@ -325,9 +322,9 @@
     (setq js2-use-font-lock-faces t
           mode-name "JS2")
     (setq-default js2-bounce-indent-p nil
-                  js-indent-level 4
+                  js-indent-level 2
                   js2-basic-indent 2
-                  js2-basic-offset 4
+                  js2-basic-offset 2
                   js2-auto-indent-p t
                   js2-cleanup-whitespace t
                   js2-enter-indents-newline t
@@ -367,13 +364,13 @@
   :init (global-anzu-mode +1)
   :config
   (progn
-     (set-face-attribute 'anzu-mode-line nil
-                         :foreground "yellow" :weight 'bold)
-     (custom-set-variables
-      '(anzu-mode-lighter "")
-      '(anzu-deactivate-region t)
-      '(anzu-search-threshold 1000)
-      '(anzu-replace-to-string-separator " => ")))
+    (set-face-attribute 'anzu-mode-line nil
+                        :foreground "yellow" :weight 'bold)
+    (custom-set-variables
+     '(anzu-mode-lighter "")
+     '(anzu-deactivate-region t)
+     '(anzu-search-threshold 1000)
+     '(anzu-replace-to-string-separator " => ")))
   :bind (("M-%" . anzu-query-replace)
          ("C-M-%" . anzu-query-replace-regexp)))
 
@@ -405,13 +402,13 @@
               (lambda ()
                 (web-mode-set-engine "mako")
                 (setq web-mode-disable-auto-pairing t)
-                (setq web-mode-css-indent-offset 4)
+                (setq web-mode-css-indent-offset 2)
                 (setq web-mode-indent-style 4)
                 (setq web-mode-markup-indent-offset 4)
                 (setq web-mode-block-padding 4)
-                (setq web-mode-style-padding 4)
+                (setq web-mode-style-padding 2)
                 (setq web-mode-code-indent-offset 4)
-                (setq web-mode-script-padding 4)))))
+                (setq web-mode-script-padding 2)))))
 
 (use-package ibuffer
   :config (setq ibuffer-expert t)
@@ -484,8 +481,7 @@
             css-mode-hook
             scss-mode-hook
             sass-mode-hook)
-    (add-hook it 'rainbow-mode)
-    (add-hook it 'my-hook)))
+    (add-hook it 'rainbow-mode)))
 
 (use-package drag-stuff
   :config
@@ -603,7 +599,6 @@
      python-shell-completion-string-code
      "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
     (add-hook 'python-mode-hook 'jedi:setup)
-    (add-hook 'python-mode-hook 'my-hook)
     (setq jedi:complete-on-dot t)
     (setq py-electric-colon-active t)
     (setenv "LC_CTYPE" "UTF-8"))
