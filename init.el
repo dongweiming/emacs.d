@@ -20,7 +20,7 @@
 (if (display-graphic-p)
     (require 'nyan-mode))
 
-; helm
+;; helm
 (require 'helm-config)
 (helm-mode 1)
 (require 'imenu-anywhere)
@@ -31,6 +31,7 @@
 (bind-key "C-." 'helm-imenu-anywhere)
 (bind-key "C-x C-f" 'helm-find-files)
 (bind-key "M-x" 'helm-M-x)
+;;(bind-key "M-x" 'helm-M-x)
 (bind-key "M-l" 'helm-eshell-history)
 
 ; eshell
@@ -673,15 +674,6 @@
 
 ;; helm-ipython
 (use-package helm-ipython)
-
-;; helm-open-github
-;(use-package helm-open-github
-;  :config
-;  (progn
-;    (global-set-key (kbd "C-c o f") 'helm-open-github-from-file)
-;    (global-set-key (kbd "C-c o c") 'helm-open-github-from-commit)
-;    (global-set-key (kbd "C-c o i") 'helm-open-github-from-issues)
-;    (global-set-key (kbd "C-c o p") 'helm-open-github-from-pull-requests)))
 
 ;;;; Bindings
 

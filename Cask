@@ -61,7 +61,6 @@
 (depends-on "helm-descbinds")
 (depends-on "ido-ubiquitous")
 (depends-on "imenu-anywhere")
-(depends-on "helm-open-github")
 (depends-on "multiple-cursors")
 (depends-on "project-explorer")
 (depends-on "aggressive-indent")
