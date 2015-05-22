@@ -23,7 +23,6 @@
 ;; helm
 (require 'helm-config)
 (helm-mode 1)
-(require 'imenu-anywhere)
 (setq enable-recursive-minibuffers t)
 (bind-key "C-c h" 'helm-mini)
 (bind-key "M-l" 'helm-locate)
@@ -169,6 +168,13 @@
     (define-key ac-completing-map "\t" 'ac-complete)
     (define-key ac-completing-map "\r" nil)))
 
+(use-package markdown-mode
+  :config
+  (progn
+    (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+    (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+    (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))))
+
 (use-package projectile
   :config
   (progn
@@ -218,8 +224,11 @@
   :bind (("C-c SPC" . ace-jump-word-mode)
          ("C-c TAB" . ace-jump-line-mode)))
 
-(use-package find-file-in-repository
-  :bind (("C-x f" . find-file-in-repository)))
+(use-package fiplr
+  :bind (("C-x f" . fiplr-find-file)))
+
+;;(use-package find-file-in-repository
+;;  :bind (("C-x f" . find-file-in-repository)))
 
 (use-package multiple-cursors
   :bind (("C-c m" . mc/mark-next-like-this)
@@ -287,6 +296,29 @@
          ("C-x n" . git-gutter:next-hunk)
          ("C-x v s" . git-gutter:stage-hunk)
          ("C-x v r" . git-gutter:revert-hunk)))
+
+(use-package git-gutter+
+  :config
+  (progn
+    (global-git-gutter+-mode t)
+    (add-hook 'python-mode-hook 'git-gutter+-mode)
+    (add-hook 'web-mode-hook 'git-gutter+-mode)
+    ;;; Jump between hunks
+    (define-key git-gutter+-mode-map (kbd "C-x n") 'git-gutter+-next-hunk)
+    (define-key git-gutter+-mode-map (kbd "C-x p") 'git-gutter+-previous-hunk)
+
+    ;;; Act on hunks
+    (define-key git-gutter+-mode-map (kbd "C-x v =") 'git-gutter+-show-hunk)
+    (define-key git-gutter+-mode-map (kbd "C-x r") 'git-gutter+-revert-hunks)
+    ;; Stage hunk at point.
+    ;; If region is active, stage all hunk lines within the region.
+    (define-key git-gutter+-mode-map (kbd "C-x t") 'git-gutter+-stage-hunks)
+    (define-key git-gutter+-mode-map (kbd "C-x c") 'git-gutter+-commit)
+    (define-key git-gutter+-mode-map (kbd "C-x C") 'git-gutter+-stage-and-commit)
+    (define-key git-gutter+-mode-map (kbd "C-x C-y") 'git-gutter+-stage-and-commit-whole-buffer)
+    (define-key git-gutter+-mode-map (kbd "C-x U") 'git-gutter+-unstage-whole-buffer))
+  :bind (("C-x g" . git-gutter+-mode)
+         ("C-x G" . global-git-gutter+-mode)))
 
 ;; When you visit a file, point goes to the last place where it was when you previously visited the same file.
 (use-package saveplace
@@ -382,7 +414,7 @@
     (setq scss-compile-at-save nil)))
 
 (use-package eshell
-  :bind ("M-1" . eshell)
+  :bind (("M-1" . eshell))
   :init
   (add-hook 'eshell-first-time-mode-hook
             (lambda ()
@@ -471,9 +503,6 @@
     (setq undo-tree-visualizer-diff t)
     (setq undo-tree-history-directory-alist (expand-file-name ".undo" tmp-dir))
     (setq undo-tree-visualizer-timestamps t)))
-
-(use-package idle-highlight-mode
-  :init (idle-highlight-mode))
 
 (use-package rainbow-mode
   :config
@@ -640,9 +669,8 @@
 ;; helm-swoop
 (use-package helm-swoop
   :bind (("M-i" . helm-swoop)
-         ("M-I" . helm-swoop-back-to-last-point)
-         ("C-c M-i" . helm-multi-swoop)
-         ("C-x M-i" . helm-multi-swoop-all))
+         ("M-I" . helm-multi-swoop-all-from-helm-swoop))
+
   :config
   (progn
     (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)

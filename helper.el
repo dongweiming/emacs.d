@@ -67,11 +67,7 @@ C-c m           vr/mc-mark
 C-h C-m         discover-my-major
 C-.             helm-imenu-anywhere
 M-i             helm-swoop
-M-I             helm-swoop-back-to-last-point
-C-c M-i         helm-multi-swoop
-C-x M-i         helm-multi-swoop-all
-s-i             helm-css-scss
-s-I             helm-css-scss-back-to-last-point
+M-I             helm-multi-swoop-all-from-helm-swoop
 
 C-c <up>        smart-up
 C-c <down>      smart-down
@@ -101,6 +97,7 @@ C-c c           hs-toggle-hiding
 M-/             hippie-expand
 M-.             jump-to-definition(python/js)
 M-,             pop-tag-mark
+M-y             browse-kill-ring
 \n
 Web mode:
 
