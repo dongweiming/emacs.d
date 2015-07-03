@@ -203,10 +203,6 @@
   :config
   (flx-ido-mode 1))
 
-(use-package ido-ubiquitous
-  :config
-  (ido-ubiquitous-mode t))
-
 (use-package diff-hl
   :if window-system
   :config
@@ -239,7 +235,6 @@
 (use-package magit
   :init
   (progn
-    (use-package magit-blame)
     (bind-key "C-c C-a" 'magit-just-amend magit-mode-map))
   :config
   (progn
@@ -255,11 +250,8 @@
          ("M-g f" . magit-pull)
          ("M-g p" . magit-push)))
 
-(use-package git-blame)
 (use-package git-commit-mode)
 (use-package git-rebase-mode)
-(use-package gitignore-mode)
-(use-package gitconfig-mode)
 
 (setq-default
  magit-save-some-buffers nil
@@ -582,10 +574,6 @@
     (venv-initialize-interactive-shells)
     (venv-initialize-eshell)))
 
-(use-package golden-ratio
-  :config
-  (golden-ratio-mode 1))
-
 ;; Lisp
 
 ;;;; Auto Insert by yasnippet
@@ -680,28 +668,9 @@
     (setq helm-swoop-split-direction 'split-window-vertically)
     (setq helm-swoop-speed-or-color nil)))
 
-;; helm-css-scss
-(use-package helm-css-scss
-  :config
-  (progn
-    (setq helm-css-scss-insert-close-comment-depth 4)
-    (setq helm-css-scss-split-with-multiple-windows nil)
-    (setq helm-css-scss-split-direction 'split-window-vertically)
-    (--each '(css-mode-hook
-              scss-mode-hook
-              less-css-mode-hook)
-      (add-hook it (lambda ()
-                     (local-set-key (kbd "s-i") 'helm-css-scss)
-                     (local-set-key (kbd "s-I") 'helm-css-scss-back-to-last-point))))
-    (define-key isearch-mode-map (kbd "s-i") 'helm-css-scss-from-isearch)
-    (define-key helm-css-scss-map (kbd "s-i") 'helm-css-scss-multi-from-helm-css-scss)))
-
 ;; helm-descbinds
 (use-package helm-descbinds
   :init (helm-descbinds-mode))
-
-;; helm-ipython
-(use-package helm-ipython)
 
 ;;;; Bindings
 
