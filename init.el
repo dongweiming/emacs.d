@@ -233,9 +233,6 @@
 
 ;; Git
 (use-package magit
-  :init
-  (progn
-    (bind-key "C-c C-a" 'magit-just-amend magit-mode-map))
   :config
   (progn
     (setq magit-default-tracking-name-function 'magit-default-tracking-name-branch-only)
@@ -337,7 +334,7 @@
 (use-package css-mode
   :config
   (progn
-    (setq css-indent-offset 2)))
+    (setq css-indent-offset 4)))
 
 (use-package js2-mode
   :mode (("\\.js$" . js2-mode))
@@ -347,9 +344,9 @@
     (setq js2-use-font-lock-faces t
           mode-name "JS2")
     (setq-default js2-bounce-indent-p nil
-                  js-indent-level 2
-                  js2-basic-indent 2
-                  js2-basic-offset 2
+                  js-indent-level 4
+                  js2-basic-indent 4
+                  js2-basic-offset 4
                   js2-auto-indent-p t
                   js2-cleanup-whitespace t
                   js2-enter-indents-newline t
@@ -427,13 +424,13 @@
               (lambda ()
                 (web-mode-set-engine "mako")
                 (setq web-mode-disable-auto-pairing t)
-                (setq web-mode-css-indent-offset 2)
+                (setq web-mode-css-indent-offset 4)
                 (setq web-mode-indent-style 4)
                 (setq web-mode-markup-indent-offset 4)
                 (setq web-mode-block-padding 4)
-                (setq web-mode-style-padding 2)
+                (setq web-mode-style-padding 4)
                 (setq web-mode-code-indent-offset 4)
-                (setq web-mode-script-padding 2)))))
+                (setq web-mode-script-padding 4)))))
 
 (use-package ibuffer
   :config (setq ibuffer-expert t)
