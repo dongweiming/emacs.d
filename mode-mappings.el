@@ -24,9 +24,10 @@
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 
 ;; plim-mode
-;(add-to-list 'auto-mode-alist '("\\.html\\'" . plim-mode)
+;; (add-to-list 'auto-mode-alist '("\\.html\\'" . plim-mode)
 
 ;; html-mode
+(add-to-list 'auto-mode-alist '("\\.*\\.js[x]?\\$" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
 
 (provide 'mode-mappings)

@@ -430,6 +430,10 @@
                 (setq web-mode-block-padding 4)
                 (setq web-mode-style-padding 4)
                 (setq web-mode-code-indent-offset 4)
+                (setq web-mode-enable-css-colorization t)
+                (setq web-mode-ac-sources-alist
+                      '(("css" . (ac-source-css-property))
+                        ("html" . (ac-source-words-in-buffer ac-source-abbrev))))
                 (setq web-mode-script-padding 4)))))
 
 (use-package ibuffer
