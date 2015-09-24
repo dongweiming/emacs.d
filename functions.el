@@ -3,6 +3,7 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'magit-core)
 
 (defun system-is-mac ()
   (interactive)
@@ -83,18 +84,18 @@
 ;; (C-w or M-w) then use column 1 to end. No need to "C-a C-k" or "C-a C-w" etc.
 (defadvice kill-ring-save (before slick-copy activate compile) "When called
   interactively with no active region, copy a single line instead."
-  (interactive
-   (if mark-active (list (region-beginning) (region-end))
-     (message "Copied line")
-     (list (line-beginning-position)
-           (line-beginning-position 2)))))
+           (interactive
+            (if mark-active (list (region-beginning) (region-end))
+              (message "Copied line")
+              (list (line-beginning-position)
+                    (line-beginning-position 2)))))
 
 (defadvice kill-region (before slick-cut activate compile)
   "When called interactively with no active region, kill a single line instead."
   (interactive
-    (if mark-active (list (region-beginning) (region-end))
-      (list (line-beginning-position)
-        (line-beginning-position 2)))))
+   (if mark-active (list (region-beginning) (region-end))
+     (list (line-beginning-position)
+           (line-beginning-position 2)))))
 
 ;; Open as root---------------------------------
 ;; Ask if I want to open file as root (and use tramp-sudo to give
@@ -149,8 +150,8 @@
     (if (region-active-p)
         (setq beg (region-beginning) end (region-end))
       (setq beg (line-beginning-position) end (line-end-position)))
-     (align-regexp beg end
-                   (rx (group (zero-or-more (syntax whitespace))) "=") 1 1 )
+    (align-regexp beg end
+                  (rx (group (zero-or-more (syntax whitespace))) "=") 1 1 )
     (next-line)))
 
 ;; From prelude
@@ -167,9 +168,9 @@ PROMPT sets the `read-string prompt."
 (defmacro install-search-engine (search-engine-name search-engine-url search-engine-prompt)
   "Given some information regarding a search engine, install the interactive command to search through them"
   `(defun ,(intern (format "search-%s" search-engine-name)) ()
-       ,(format "Search %s with a query or region if any." search-engine-name)
-       (interactive)
-       (site-search ,search-engine-url ,search-engine-prompt)))
+     ,(format "Search %s with a query or region if any." search-engine-name)
+     (interactive)
+     (site-search ,search-engine-url ,search-engine-prompt)))
 
 (install-search-engine "google"     "http://www.google.com/search?q="              "Google: ")
 (install-search-engine "github"     "https://github.com/search?q="                 "Search GitHub: ")
@@ -189,5 +190,22 @@ PROMPT sets the `read-string prompt."
   (declare (indent defun))
   `(eval-after-load ,feature
      '(progn ,@body)))
+
+;; Modify from https://gist.github.com/toctan/e8bb21bb97a963c140e4
+(defun get-repo-url (arg)
+  (let* ((remote (if arg "upstream" (nth 2 (s-split "/" (magit-get-tracked-ref)))))
+         (remote-url (magit-get "remote" remote "url"))
+         (fragments (s-split "[:/@]/?/?" (s-chop-suffix ".git" remote-url))))
+    (concat "http://" (s-join "/" (cdr fragments)))))
+
+(defun open-in-repo (arg)
+  (interactive "P")
+  (let* ((url (get-repo-url arg))
+         (branch (if arg "master" (magit-get-current-branch)))
+         (file (buffer-file-name (current-buffer)))
+         (fragment (if file "blob" "tree"))
+         (path (magit-file-relative-name (or file default-directory)))
+         (line (if file (concat "#L" (number-to-string (line-number-at-pos))) "")))
+    (shell-command (concat "open -a Google\\ Chrome.app " (s-join "/" (list url fragment branch path)) line))))
 
 ;;; functions.el ends here

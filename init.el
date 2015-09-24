@@ -33,7 +33,7 @@
 ;;(bind-key "M-x" 'helm-M-x)
 (bind-key "M-l" 'helm-eshell-history)
 
-; eshell
+;; eshell
 (add-hook 'eshell-mode-hook
           #'(lambda ()
               (define-key eshell-mode-map
@@ -117,7 +117,7 @@
 (use-package direx
   :bind (("C-x C-j" . direx:jump-to-directory)))
 
-; A modern list api for Emacs
+;; A modern list api for Emacs
 (use-package dash
   :config (dash-enable-font-lock))
 
@@ -128,7 +128,7 @@
   :init (smex-initialize)
   :bind (("M-x" . smex)
          ("M-X" . smex-major-mode-commands)))
-  :config (setq smex-save-file (expand-file-name ".smex-items" tmp-dir))
+:config (setq smex-save-file (expand-file-name ".smex-items" tmp-dir))
 
 (use-package sql
   :config
@@ -709,9 +709,11 @@
 ;; Align Text use "="
 (bind-key "C-c k" 'align-to-equals)
 
+;; Open source code
+(bind-key "M-q" 'open-in-repo)
 
 ;; Load you local settings
 (load-local "local-settings")
 
-;(provide 'init)
+(provide 'init)
 ;;; init.el ends here

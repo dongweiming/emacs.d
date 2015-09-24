@@ -39,7 +39,6 @@
 (depends-on "isend-mode")
 (depends-on "projectile")
 (depends-on "coffee-mode")
-(depends-on "git-gutter+")
 (depends-on "python-mode")
 (depends-on "smartparens")
 (depends-on "use-package")
