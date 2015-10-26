@@ -80,9 +80,6 @@
 ;; Turn beep off
 (setq visible-bell nil)
 
-;; Warn only when opening files bigger than 100MB
-(setq large-file-warning-threshold 100000000)
-
 (if (getenv "BROWSER")
     (setq browse-url-generic-program
           (executable-find (getenv "BROWSER"))
