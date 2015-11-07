@@ -9,12 +9,11 @@
 \n
 Specific commands:
 \n
-C-x C-f         ->find-files.
-M-l             ->eshell-history.
-C-c h           ->helm-mini.
+C-x C-f         ->helm-find-files.
+C-c h           ->helm-mini. # buffer
 M-x             ->smex.
 M-l             ->helm-locate.
-M-t             ->helm-top.
+M-t             ->helm-top. # top命令
 C-x h           ->emacs-bindings-help.
 C-c p d         ->display all dirs in the project.
 
@@ -94,7 +93,7 @@ C-c W           hs-show-block
 C-c s           hs-hide-all
 C-c S           hs-show-all
 C-c c           hs-toggle-hiding
-M-/             hippie-expand
+M-/             hippie-expand 文件自动补全
 M-.             jump-to-definition(python/js)
 M-,             pop-tag-mark
 M-y             browse-kill-ring

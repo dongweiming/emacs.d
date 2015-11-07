@@ -27,11 +27,14 @@
 (bind-key "C-c h" 'helm-mini)
 (bind-key "M-l" 'helm-locate)
 (bind-key "M-t" 'helm-top)
-(bind-key "C-." 'helm-imenu-anywhere)
+;;(bind-key "C-." 'helm-imenu-anywhere)
 (bind-key "C-x C-f" 'helm-find-files)
-(bind-key "M-x" 'helm-M-x)
 ;;(bind-key "M-x" 'helm-M-x)
-(bind-key "M-l" 'helm-eshell-history)
+;;(bind-key "M-l" 'helm-eshell-history)
+(dolist (matching '(helm-buffers-fuzzy-matching helm-recentf-fuzzy-match
+                                                helm-M-x-fuzzy-match))
+  (setq matching t))
+
 
 ;; eshell
 (add-hook 'eshell-mode-hook
@@ -52,10 +55,6 @@
         (load-file file))))
 
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector ["#262626" "#d70000" "#5f8700" "#af8700" "#0087ff" "#af005f" "#00afaf" "#626262"])
  '(anzu-deactivate-region t)
  '(anzu-mode-lighter "")
@@ -69,12 +68,7 @@
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" init-dir))
 (load-theme 'noctilux t)
 
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (when (string= (buffer-name) "*scratch*")
-              (animate-string "Emacs Makes All Computing Simple" (/ (frame-height) 2)))))
-
-;;;; Local
+;; Local
 
 (load-local "helper")
 (load-local "misc")
@@ -116,6 +110,7 @@
 
 (use-package direx
   :bind (("C-x C-j" . direx:jump-to-directory)))
+  ;; :bind (("C-x C-j" . direx:jump-to-directory-other-window)))
 
 ;; A modern list api for Emacs
 (use-package dash
@@ -128,7 +123,6 @@
   :init (smex-initialize)
   :bind (("M-x" . smex)
          ("M-X" . smex-major-mode-commands)))
-:config (setq smex-save-file (expand-file-name ".smex-items" tmp-dir))
 
 (use-package sql
   :config
@@ -171,9 +165,7 @@
 (use-package markdown-mode
   :config
   (progn
-    (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
-    (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-    (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))))
+    (add-to-list 'auto-mode-alist '("\\.\\(markdown\\|mkd\\|text\\|md\\)$" . markdown-mode))))
 
 (use-package projectile
   :config
@@ -182,26 +174,6 @@
     (setq projectile-enable-caching t)
     (setq projectile-file-exists-local-cache-expire (* 5 60))
     (setq projectile-require-project-root nil)))
-
-(use-package ido
-  :init (ido-mode 1)
-  :config
-  (progn
-    (setq ido-case-fold t)
-    (setq ido-everywhere t)
-    (setq ido-enable-prefix nil)
-    (setq ido-enable-flex-matching t)
-    (setq ido-create-new-buffer 'always)
-    (setq ido-max-prospects 10)
-    (setq ido-save-directory-list-file (expand-file-name "ido-saved-places" tmp-dir))
-    (setq ido-file-extensions-order '(".py" ".el" ".coffee" ".js" ".css" ".scss"))
-    (add-hook 'ido-setup-hook (lambda ()
-                                (define-key ido-completion-map [up] 'previous-history-element)))
-    (add-to-list 'ido-ignore-files "\\.DS_Store")))
-
-(use-package flx-ido
-  :config
-  (flx-ido-mode 1))
 
 (use-package diff-hl
   :if window-system
@@ -212,9 +184,6 @@
 
 (use-package json-reformat
   :bind (("C-x i" . json-reformat-region)))
-
-(use-package browse-kill-ring
-  :bind (("M-y" . browse-kill-ring)))
 
 (use-package ace-jump-mode
   :bind (("C-c SPC" . ace-jump-word-mode)
@@ -240,15 +209,19 @@
     (setq magit-completing-read-function 'magit-ido-completing-read)
     (setq magit-stage-all-confirm nil)
     (setq magit-unstage-all-confirm nil)
-    (setq magit-restore-window-configuration t)
-    (add-hook 'magit-mode-hook 'rinari-launch))
+    (setq magit-restore-window-configuration t))
   :bind (("M-g s" . magit-status)
          ("M-g l" . magit-log)
-         ("M-g f" . magit-pull)
-         ("M-g p" . magit-push)))
-
-(use-package git-commit-mode)
-(use-package git-rebase-mode)
+         ("M-g h" . magit-reset-hard)
+         ("M-g b" . magit-branch-popup)
+         ("M-g c" . magit-commit-popup)
+         ("M-g m" . magit-merge-popup)
+         ("M-g r" . magit-rebase-popup)
+         ("M-g a" . magit-cherry-pick-popup)
+         ("M-g m" . magit-merge-popup)
+         ("M-g v" . magit-revert)
+         ("M-g p" . magit-push)
+         ("M-g f" . magit-pull)))
 
 (setq-default
  magit-save-some-buffers nil
@@ -321,13 +294,6 @@
   (progn
     (add-hook 'after-init-hook 'global-flycheck-mode)))
 
-(use-package yasnippet
-  :init
-  (progn
-    (use-package yasnippets)
-    (yas-global-mode 1)
-    (setq-default yas/prompt-functions '(yas/ido-prompt))))
-
 (use-package yaml-mode
   :mode ("\\.yml$" . yaml-mode))
 
@@ -368,16 +334,6 @@
   :config
   (progn
     (js2r-add-keybindings-with-prefix "M-m")))
-
-(use-package coffee-mode
-  :config
-  (progn
-    (add-hook 'coffee-mode-hook
-              (lambda ()
-                (setq coffee-tab-width 2)
-                (setq coffee-args-compile '("-c" "-m"))
-                (add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point)
-                (setq coffee-cleanup-whitespace nil)))))
 
 (use-package sh-script
   :config (setq sh-basic-offset 4))
@@ -536,14 +492,6 @@
 (use-package rainbow-delimiters
   :config (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
-;; Save minibuffer history.
-(use-package savehist
-  :config
-  (progn
-    (setq savehist-file (expand-file-name ".savehist" tmp-dir))
-    (savehist-mode)
-    (setq savehist-save-minibuffer-history 1)))
-
 (use-package dired-k
   :config
   (progn
@@ -578,6 +526,12 @@
 ;; Lisp
 
 ;;;; Auto Insert by yasnippet
+(use-package yasnippet
+  :init
+  (progn
+    (use-package yasnippets)
+    (yas-global-mode 1)
+    (setq-default yas/prompt-functions '(yas/ido-prompt))))
 
 (defun my-autoinsert-yas-expand()
   "Replace text in yasnippet template."
@@ -648,6 +602,10 @@
   :bind (("C-h C-m" . discover-my-major)))
 
 (use-package crontab-mode)
+
+(use-package helm-ls-git
+  :bind (("C-x d" . helm-ls-git-ls)
+         ("C-x C-d" . helm-browse-project)))
 
 ;; helm-swoop
 (use-package helm-swoop
