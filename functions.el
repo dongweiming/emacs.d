@@ -208,4 +208,10 @@ PROMPT sets the `read-string prompt."
          (line (if file (concat "#L" (number-to-string (line-number-at-pos))) "")))
     (shell-command (concat "open -a Google\\ Chrome.app " (s-join "/" (list url fragment branch path)) line))))
 
+(defun magit-just-amend ()
+  (interactive)
+  (save-window-excursion
+    (magit-with-refresh
+           (shell-command "git --no-pager commit --amend --reuse-message=HEAD"))))
+
 ;;; functions.el ends here

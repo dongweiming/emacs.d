@@ -31,10 +31,9 @@
 (bind-key "C-x C-f" 'helm-find-files)
 ;;(bind-key "M-x" 'helm-M-x)
 ;;(bind-key "M-l" 'helm-eshell-history)
-(dolist (matching '(helm-buffers-fuzzy-matching helm-recentf-fuzzy-match
-                                                helm-M-x-fuzzy-match))
-  (setq matching t))
-
+;;(dolist (matching '(helm-buffers-fuzzy-matching helm-recentf-fuzzy-match
+;;                                                helm-M-x-fuzzy-match))
+;;  (setq matching t))
 
 ;; eshell
 (add-hook 'eshell-mode-hook
@@ -99,6 +98,29 @@
         try-expand-dabbrev
         try-expand-dabbrev-all-buffers
         try-expand-dabbrev-from-kill))
+
+;; saveplace remembers your location in a file when saving files
+(require 'saveplace)
+(setq save-place-file (expand-file-name ".saveplace" init-dir))
+;; activate it for all buffers
+(setq-default save-place t)
+
+;; savehist keeps track of some history
+(require 'savehist)
+(setq savehist-additional-variables
+      ;; search entries
+      '(search-ring regexp-search-ring)
+      ;; save every minute
+      savehist-autosave-interval 60
+      ;; keep the home clean
+      savehist-file (expand-file-name ".savehist" init-dir))
+(savehist-mode +1)
+
+;; Elisp go-to-definition with M-. and back again with M-,
+(autoload 'elisp-slime-nav-mode "elisp-slime-nav")
+(add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t)))
+(eval-after-load 'elisp-slime-nav '(diminish 'elisp-slime-nav-mode))
+
 
 (use-package powerline
   :config
@@ -221,6 +243,8 @@
          ("M-g m" . magit-merge-popup)
          ("M-g v" . magit-revert)
          ("M-g p" . magit-push)
+         ("M-g j" . magit-just-amend)
+         ("M-g x" . magit-blame-popup)
          ("M-g f" . magit-pull)))
 
 (setq-default
@@ -515,13 +539,8 @@
 
 (use-package project-explorer
   :bind (("C-c [" . project-explorer-open)
+         ("C-c \\" . project-explorer-toggle)
          ("C-c ]" . project-explorer-helm)))
-
-(use-package virtualenvwrapper
-  :config
-  (progn
-    (venv-initialize-interactive-shells)
-    (venv-initialize-eshell)))
 
 ;; Lisp
 
@@ -663,6 +682,12 @@
 
 ;; Open source code
 (bind-key "M-q" 'open-in-repo)
+
+
+(global-set-key (kbd "M-j")
+                (lambda ()
+                  (interactive)
+                  (join-line -1)))
 
 ;; Load you local settings
 (load-local "local-settings")

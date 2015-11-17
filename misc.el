@@ -86,5 +86,7 @@
           browse-url-browser-function 'browse-url-generic))
 (setq ad-redefinition-action 'accept)
 
+(put 'downcase-region 'disabled nil)
+
 (provide 'misc)
 ;;; misc.el ends here
