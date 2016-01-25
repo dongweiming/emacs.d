@@ -122,6 +122,14 @@
 (eval-after-load 'elisp-slime-nav '(diminish 'elisp-slime-nav-mode))
 
 
+(defun electric-indent-ignore-python (char)
+  "Ignore electric indentation for python-mode"
+  (if (equal major-mode 'python-mode)
+      'no-indent
+    nil))
+(add-hook 'electric-indent-functions 'electric-indent-ignore-python)
+
+
 (use-package powerline
   :config
   (powerline-ha-theme))
