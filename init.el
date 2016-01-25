@@ -20,21 +20,6 @@
 (if (display-graphic-p)
     (require 'nyan-mode))
 
-;; helm
-(require 'helm-config)
-(helm-mode 1)
-(setq enable-recursive-minibuffers t)
-(bind-key "C-c h" 'helm-mini)
-(bind-key "M-l" 'helm-locate)
-(bind-key "M-t" 'helm-top)
-;;(bind-key "C-." 'helm-imenu-anywhere)
-(bind-key "C-x C-f" 'helm-find-files)
-;;(bind-key "M-x" 'helm-M-x)
-;;(bind-key "M-l" 'helm-eshell-history)
-;;(dolist (matching '(helm-buffers-fuzzy-matching helm-recentf-fuzzy-match
-;;                                                helm-M-x-fuzzy-match))
-;;  (setq matching t))
-
 ;; eshell
 (add-hook 'eshell-mode-hook
           #'(lambda ()
@@ -129,6 +114,20 @@
     nil))
 (add-hook 'electric-indent-functions 'electric-indent-ignore-python)
 
+
+;; helm
+(use-package helm
+  :bind (("C-c h" . helm-mini)
+         ("M-l" . helm-locate)
+         ("M-t" . helm-top)
+         ("C-x C-f" . helm-find-files)))
+
+;;(bind-key "C-." 'helm-imenu-anywhere)
+;;(bind-key "M-x" 'helm-M-x)
+;;(bind-key "M-l" 'helm-eshell-history)
+;;(dolist (matching '(helm-buffers-fuzzy-matching helm-recentf-fuzzy-match
+;;                                                helm-M-x-fuzzy-match))
+;;  (setq matching t))
 
 (use-package powerline
   :config
