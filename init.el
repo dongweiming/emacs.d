@@ -689,6 +689,7 @@
 
 ;; Open source code
 (bind-key "M-q" 'open-in-repo)
+(bind-key "C-x ;" 'comment-or-uncomment-region-or-line)
 
 
 (global-set-key (kbd "M-j")
