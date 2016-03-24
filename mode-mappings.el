@@ -15,6 +15,7 @@
 (add-to-list 'auto-mode-alist '("\\.json$" . js2-mode))
 (add-to-list 'auto-mode-alist '("\\.jshintrc$" . js2-mode))
 (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx$" . js-mode))
 
 ;; Snippets
 (add-to-list 'auto-mode-alist '("yasnippet/snippets" . snippet-mode))

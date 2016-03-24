@@ -28,7 +28,7 @@
                 'helm-esh-pcomplete)))
 
 (setq default-directory (f-full (getenv "HOME")))
-(exec-path-from-shell-initialize)
+(exec-path-from-shell-copy-env "PYTHONPATH")
 
 ;; highlight URLs in comments/strings
 (add-hook 'find-file-hooks 'goto-address-prog-mode)
