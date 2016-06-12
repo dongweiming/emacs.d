@@ -62,5 +62,4 @@
 (depends-on "exec-path-from-shell")
 (depends-on "color-theme-solarized")
 (depends-on "find-file-in-repository")
-(depends-on "emmet-mode" :git "https://github.com/dongweiming/emmet-mode.git" :files ("*" (:exclude ".git")))
 (depends-on "yasnippets" :git "https://github.com/dongweiming/yasnippets.git" :files ("*" (:exclude ".git")))
